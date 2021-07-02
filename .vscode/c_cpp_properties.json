@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "PROJECT_NAME=\"${workspaceFolderBasename}\"",
+                "LSP_POSIX"
+            ],
+            "cStandard": "gnu99",
+            "cppStandard": "c++20"
+        }
+    ],
+    "version": 4
+}

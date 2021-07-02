@@ -1,0 +1,101 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"cmake debug",
+				"cmake build"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "build debug",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"cmake debug",
+				"cmake build"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "build release",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"cmake release",
+				"cmake build"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "clean ",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "cmake debug",
+			"command": "cmake",
+			"args": [
+				"-H.",
+				"-Bbuild",
+				"-DCMAKE_BUILD_TYPE=Debug"
+			]
+		},
+		{
+			"label": "cmake release",
+			"command": "cmake",
+			"args": [
+				"-H.",
+				"-Bbuild",
+				"-DCMAKE_BUILD_TYPE=Release"
+			]
+		},
+		{
+			"label": "cmake build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build",
+				"--parallel",
+				"6"
+			]
+		},
+		{
+			"label": "run",
+			"options": {
+				"cwd": "${workspaceFolder}/build"
+			},
+			"command": "./${workspaceFolderBasename}"
+		}
+	]
+}

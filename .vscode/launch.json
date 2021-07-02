@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "gendeb",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/${workspaceFolderBasename}",
+        "args": [],
+        "cwd": "${workspaceFolder}/build",
+        "preLaunchTask": "build debug",
+      }
+    ],
+    "inputs": [
+      {
+          "id": "mode",
+          "description": "Supply argument for -m to select importer",
+          "default": "1",
+          "type": "promptString"
+      },
+      {
+          "id": "jobs",
+          "description": "Supply number of jobs",
+          "default": "1",
+          "type": "promptString"
+      },
+    ]
+  }

@@ -20,19 +20,19 @@
 #define lsp_fmt(fmt) #fmt
 #endif
 
-void _lsp_log(const char *fmt, ...);
+void _lsp_log(int logl, const char *fmt, ...);
 void _lsp_flush();
 void _lsp_abort();
 
-#define lsp_log(logl, fmt, ...) \
+#define lsp_log(logl, prefix, fmt, ...) \
     if (LSP_LOGL >= logl)       \
     _lsp_log(fmt, ##__VA_ARGS__)
 
-#define lsp_err(fmt, ...) lsp_log(LSP_LOGL_ERROR, lsp_fmt(fmt), ##__VA_ARGS__)
-#define lsp_warn(fmt, ...) lsp_log(LSP_LOGL_WARNING, lsp_fmt(fmt), ##__VA_ARGS__)
-#define lsp_info(fmt, ...) lsp_log(LSP_LOGL_INFO, lsp_fmt(fmt), ##__VA_ARGS__)
-#define lsp_dbg(fmt, ...) lsp_log(LSP_LOGL_DEBUG, lsp_fmt(fmt), ##__VA_ARGS__)
-#define lsp_verb(fmt, ...) lsp_log(LSP_LOGL_VERBOSE, lsp_fmt(fmt), ##__VA_ARGS__)
+#define lsp_err(fmt, ...) lsp_log(LSP_LOGL_ERROR, "E: ", lsp_fmt(fmt), ##__VA_ARGS__)
+#define lsp_warn(fmt, ...) lsp_log(LSP_LOGL_WARNING, "W: ", lsp_fmt(fmt), ##__VA_ARGS__)
+#define lsp_info(fmt, ...) lsp_log(LSP_LOGL_INFO,"I: ", lsp_fmt(fmt), ##__VA_ARGS__)
+#define lsp_dbg(fmt, ...) lsp_log(LSP_LOGL_DEBUG, "D: ", lsp_fmt(fmt), ##__VA_ARGS__)
+#define lsp_verb(fmt, ...) lsp_log(LSP_LOGL_VERBOSE, "V: ", lsp_fmt(fmt), ##__VA_ARGS__)
 
 #define LSP_ASSERT(cond, msg, ...)                                  \
     if (!cond)                                                       \

@@ -18,10 +18,9 @@ typedef struct _lsp_queue_handle
     sig_atomic_t length, head, tail;
     size_t queue_size;
     lsp_mutex_t mutex;
-    int flags;
 } _lsp_queue_handle_t;
 
-lsp_queue_handle_t *lsp_queue_create(int length, int flags)
+lsp_queue_handle_t *lsp_queue_create(int length)
 {
     _lsp_queue_handle_t *hdl = lsp_calloc(1, sizeof(_lsp_queue_handle_t));
     if (hdl == NULL)
@@ -34,8 +33,7 @@ lsp_queue_handle_t *lsp_queue_create(int length, int flags)
     hdl->tail = 0;
     hdl->length = 0;
     hdl->queue_size = length;
-    hdl->flags = flags;
-    if (lsp_mutex_init(&hdl->mutex) != LSP_SUCCESS)
+    if (lsp_mutex_init(&hdl->mutex) != LSP_ERR_NONE)
         goto alloc_err;
 
     return (void *)hdl;
@@ -69,16 +67,13 @@ int lsp_queue_enqueue(lsp_queue_handle_t *handle, const void *const data, const 
     _lsp_queue_entry_t *entry;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
-    LSP_ASSERT(!(hdl->flags & LSP_QUEUE_FLAG_ZERO_COPY),
-               "queue is created with LSP_QUEUE_FLAG_ZERO_COPY\n");
-
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
         return LSP_ERR_QUEUE_FULL;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
-    if (rc != LSP_SUCCESS)
+    if (rc != LSP_ERR_NONE)
         goto err;
 
     entry = &hdl->arr[hdl->tail];
@@ -92,7 +87,7 @@ int lsp_queue_enqueue(lsp_queue_handle_t *handle, const void *const data, const 
 
     hdl->tail = ++hdl->tail % hdl->queue_size;
     hdl->length++;
-    rc = LSP_SUCCESS;
+    rc = LSP_ERR_NONE;
 mutex_err:
     lsp_mutex_unlock(&hdl->mutex);
 err:
@@ -105,16 +100,13 @@ int lsp_queue_enqueue_zc(lsp_queue_handle_t *handle, const void *const data, con
     _lsp_queue_entry_t *entry;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
-    LSP_ASSERT(hdl->flags & LSP_QUEUE_FLAG_ZERO_COPY,
-               "queue is not created with LSP_QUEUE_FLAG_ZERO_COPY\n");
-
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
         return LSP_ERR_QUEUE_FULL;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
-    if (rc != LSP_SUCCESS)
+    if (rc != LSP_ERR_NONE)
         goto err;
 
     entry = &hdl->arr[hdl->tail];
@@ -124,7 +116,7 @@ int lsp_queue_enqueue_zc(lsp_queue_handle_t *handle, const void *const data, con
 
     hdl->tail = ++hdl->tail % hdl->queue_size;
     hdl->length++;
-    rc = LSP_SUCCESS;
+    rc = LSP_ERR_NONE;
 mutex_err:
     lsp_mutex_unlock(&hdl->mutex);
 err:
@@ -137,16 +129,13 @@ int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const
     _lsp_queue_entry_t *entry;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
-    LSP_ASSERT(!(hdl->flags & LSP_QUEUE_FLAG_ZERO_COPY),
-               "queue is created with LSP_QUEUE_FLAG_ZERO_COPY\n");
-
     // rely on atomic size
     if (hdl->length == 0)
         return LSP_ERR_QUEUE_EMPTY;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
-    if (rc != LSP_SUCCESS)
+    if (rc != LSP_ERR_NONE)
         goto err;
 
     entry = &hdl->arr[hdl->head];
@@ -163,7 +152,7 @@ int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const
 
     hdl->head = ++hdl->head % hdl->queue_size;
     hdl->length--;
-    rc = LSP_SUCCESS;
+    rc = LSP_ERR_NONE;
 mutex_err:
     lsp_mutex_unlock(&hdl->mutex);
 err:
@@ -176,16 +165,13 @@ int lsp_queue_dequeue_zc(lsp_queue_handle_t *handle, void **data, size_t *len, c
     _lsp_queue_entry_t *entry;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
-    LSP_ASSERT(hdl->flags & LSP_QUEUE_FLAG_ZERO_COPY,
-               "queue is created with LSP_QUEUE_FLAG_ZERO_COPY\n");
-
     // rely on atomic size
     if (hdl->length == 0)
         return LSP_ERR_QUEUE_EMPTY;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
-    if (rc != LSP_SUCCESS)
+    if (rc != LSP_ERR_NONE)
         goto err;
 
     entry = &hdl->arr[hdl->head];
@@ -196,7 +182,7 @@ int lsp_queue_dequeue_zc(lsp_queue_handle_t *handle, void **data, size_t *len, c
 
     hdl->head = ++hdl->head % hdl->queue_size;
     hdl->length--;
-    rc = LSP_SUCCESS;
+    rc = LSP_ERR_NONE;
 mutex_err:
     lsp_mutex_unlock(&hdl->mutex);
 err:

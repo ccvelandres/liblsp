@@ -22,7 +22,7 @@ typedef void lsp_mutex_t;
  * @brief lsp wrapper for creating dynamic mutexes
  * 
  * @param mutex pointer to mutex handle
- * @return int #LSP_SUCCESS on success, otherwise #LSP_ERR_MUTEX
+ * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX
  */
 lsp_mutex_t *lsp_mutex_create();
 
@@ -30,7 +30,7 @@ lsp_mutex_t *lsp_mutex_create();
  * @brief lsp wrapper for initializing static mutexes
  * 
  * @param mutex pointer to mutex handle
- * @return int #LSP_SUCCESS on success, otherwise #LSP_ERR_MUTEX
+ * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX
  */
 int lsp_mutex_init(lsp_mutex_t *mutex);
 
@@ -38,7 +38,7 @@ int lsp_mutex_init(lsp_mutex_t *mutex);
  * @brief lsp wrapper for destroying mutexes
  * 
  * @param mutex pointer to mutex handle
- * @return int #LSP_SUCCESS on success, otherwise #LSP_ERR_MUTEX
+ * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX
  */
 int lsp_mutex_destroy(lsp_mutex_t *mutex);
 
@@ -47,7 +47,7 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex);
  * 
  * @param mutex pointer to mutex handle
  * @param timeout timeout in ms, use -1 for no timeout
- * @return int #LSP_SUCCESS on success, otherwise #LSP_ERR_MUTEX or #LSP_ERR_TIMEOUT
+ * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX or #LSP_ERR_TIMEOUT
  */
 int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout);
 
@@ -55,7 +55,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout);
  * @brief lsp wrapper for unlocking mutexes
  * 
  * @param mutex pointer to mutex handle
- * @return int #LSP_SUCCESS on success, otherwise #LSP_ERR_MUTEX
+ * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX
  */
 int lsp_mutex_unlock(lsp_mutex_t *mutex);
 

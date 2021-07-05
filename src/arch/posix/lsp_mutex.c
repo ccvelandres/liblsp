@@ -17,7 +17,7 @@ int lsp_mutex_init(lsp_mutex_t *mutex)
         return LSP_ERR_MUTEX;
     }
     else
-        return LSP_SUCCESS;
+        return LSP_ERR_NONE;
 }
 int lsp_mutex_destroy(lsp_mutex_t *mutex)
 {
@@ -28,7 +28,7 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex)
         return LSP_ERR_MUTEX;
     }
     else
-        return LSP_SUCCESS;
+        return LSP_ERR_NONE;
 }
 
 int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout)
@@ -44,7 +44,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout)
         return LSP_ERR_MUTEX;
     }
     else
-        return LSP_SUCCESS;
+        return LSP_ERR_NONE;
 }
 
 int lsp_mutex_unlock(lsp_mutex_t *mutex)
@@ -56,5 +56,5 @@ int lsp_mutex_unlock(lsp_mutex_t *mutex)
         return LSP_ERR_MUTEX;
     }
     else
-        return LSP_SUCCESS;
+        return LSP_ERR_NONE;
 }

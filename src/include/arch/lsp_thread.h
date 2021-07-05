@@ -45,7 +45,7 @@ typedef lsp_return_t (*lsp_thread_func_t)(void *arg);
  * @param parameter parameter for thread function
  * @param priority thread priority
  * @param handle reference to created thread
- * @return int LSP_SUCCESS for success, otherwise an error code
+ * @return int LSP_ERR_NONE for success, otherwise an error code
  */
 int lsp_thread_create(lsp_thread_func_t func, 
     const char* name,

@@ -16,5 +16,5 @@ int lsp_thread_create(lsp_thread_func_t func,
         return LSP_ERR;
     }
     else 
-        return LSP_SUCCESS;
+        return LSP_ERR_NONE;
 }

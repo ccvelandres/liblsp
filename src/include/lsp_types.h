@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "lsp_defaults.h"
+
 /**
    @defgroup LSP_ERR LSP Error codes
    @{

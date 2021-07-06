@@ -26,7 +26,7 @@ void _lsp_abort();
 
 #define lsp_log(logl, prefix, fmt, ...) \
     if (LSP_LOGL >= logl)       \
-    _lsp_log(fmt, ##__VA_ARGS__)
+    _lsp_log(logl, prefix fmt, ##__VA_ARGS__)
 
 #define lsp_err(fmt, ...) lsp_log(LSP_LOGL_ERROR, "E: ", lsp_fmt(fmt), ##__VA_ARGS__)
 #define lsp_warn(fmt, ...) lsp_log(LSP_LOGL_WARNING, "W: ", lsp_fmt(fmt), ##__VA_ARGS__)

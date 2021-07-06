@@ -63,8 +63,15 @@ typedef struct lsp_packet
 }lsp_packet_t;
 
 #ifndef container_of
-#define container_of(ptr, type, member) ({ \
-    (type *)((char *)ptr - offsetof(type, member)); })
+#define container_of(ptr, type, member) ({ (type *)((char *)ptr - offsetof(type, member)); })
+#endif
+
+#ifndef ALIGNED_SIZE
+#define ALIGNED_SIZE(x) ((((x))/sizeof(void*) + 1) * sizeof(void*))
+#endif
+
+#ifndef ALIGNED_SIZEOF
+#define ALIGNED_SIZEOF(x) (((sizeof(x))/sizeof(void*) + 1) * sizeof(void*))
 #endif
 
 #endif

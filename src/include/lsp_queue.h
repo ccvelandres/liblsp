@@ -2,10 +2,26 @@
 #define LSP_QUEUE_H
 
 #include <stddef.h>
+#include "signal.h"
 
 #include "lsp_types.h"
+#include "lsp_mutex.h"
 
-typedef void * lsp_queue_handle_t;
+/** LSP Queue entry struct */
+typedef struct lsp_queue_entry_s
+{
+    size_t item_size;
+    void *data;
+} lsp_queue_entry_t;
+
+/** LSP Queue Handle */
+typedef struct lsp_queue_handle_s
+{
+    lsp_queue_entry_t *arr;
+    sig_atomic_t length, head, tail;
+    size_t queue_size;
+    lsp_mutex_t mutex;
+} lsp_queue_handle_t;
 
 /**
  * @brief create a queue

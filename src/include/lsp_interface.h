@@ -13,8 +13,8 @@ typedef struct lsp_interface_s lsp_interface_t;
 /** LSP Interface operation functions*/
 typedef struct lsp_interface_ops
 {
-    int (*open)(lsp_interface_t *pv); /** called by system to initialize interface */
-    int (*close)(lsp_interface_t *pv); /** called by system during shutdown */
+    int (*open)(lsp_interface_t *pv);                       /** called by system to initialize interface */
+    int (*close)(lsp_interface_t *pv);                      /** called by system during shutdown */
     int (*tx)(lsp_interface_t *pv, void *data, size_t len); /** used by system to transmit packets */
 } lsp_interface_ops_t;
 
@@ -39,9 +39,10 @@ struct lsp_interface_s
     int flags;                   /** interface flags. see #LSP_IF_FLAGS */
     uint32_t mtu;                /** max transmission unit of interface */
     lsp_interface_ops_t *ops;    /** interface functions */
-    lsp_queue_handle_t tx_queue; /** interface tx queue */
     lsp_interface_stats_t stats; /** interface stats */
+    int min_header_len;          /** minimum header len to allocate in front of lsp packet for encapsulation */
     lsp_list_t list;             /** interface is implemented as linked list*/
+    lsp_queue_handle_t tx_queue; /** interface tx queue */
     void *interface_data;        /** interface data, used by driver (retrieve with interface_getdata()) */
 };
 

@@ -10,14 +10,14 @@
    @defgroup LSP_ERR LSP Error codes
    @{
 */
-#define LSP_ERR_NONE 0 /** Success */
-#define LSP_ERR 1 /** Generic error code */
-#define LSP_ERR_NOMEM 2 /** Insufficient resources */
-#define LSP_ERR_MUTEX 3 /** Mutex error */
+#define LSP_ERR_NONE 0    /** Success */
+#define LSP_ERR 1         /** Generic error code */
+#define LSP_ERR_NOMEM 2   /** Insufficient resources */
+#define LSP_ERR_MUTEX 3   /** Mutex error */
 #define LSP_ERR_TIMEOUT 4 /** Timeout */
 #define LSP_ERR_INVALID 5 /** Invalid argument */
 
-#define LSP_ERR_QUEUE_FULL 10 /** Queue full */
+#define LSP_ERR_QUEUE_FULL 10  /** Queue full */
 #define LSP_ERR_QUEUE_EMPTY 11 /** Queue empty */
 /**@}*/
 
@@ -36,31 +36,33 @@
 #define LSP_EVENT_RX_EVENT 1
 /**@}*/
 
-typedef uint16_t lsp_addr_t; /** LSP typedef for address */
-
 /**
- * @brief LSP Packet
- * 
- * This structure provides easy access to fields in the lsp packet
- * 
- */
-typedef struct lsp_packet
-{
-    lsp_addr_t dst_addr;
-    lsp_addr_t src_addr;
-    uint16_t plen:10;
-    uint16_t l2proto:6;
-    uint16_t frag:3;
-    uint16_t seqnum:3;
-    uint16_t src_port:5;
-    uint16_t dst_port:5;
+   @defgroup LSP_PACKET LSP Packet defines
+   @{
+*/
+#define LSP_PACKET_PLEN_BITS 10
+#define LSP_PACKET_PROTO_BITS 6
+#define LSP_PACKET_FRAG_BITS 3
+#define LSP_PACKET_SEQNUM_BITS 3
+#define LSP_PACKET_SRCPORT_BITS 5
+#define LSP_PACKET_DSTPORT_BITS 5
 
-    union {
-        uint8_t pl8[0];
-        uint16_t pl16[0];
-        uint32_t pl32[0];
-    };
-}lsp_packet_t;
+#define LSP_PACKET_PLEN_MAX ((1 << LSP_PACKET_PLEN_BITS) - 1)
+#define LSP_PACKET_PROTO_MAX ((1 << LSP_PACKET_PROTO_BITS) - 1)
+#define LSP_PACKET_FRAG_MAX ((1 << LSP_PACKET_FRAG_BITS) - 1)
+#define LSP_PACKET_SEQNUM_MAX ((1 << LSP_PACKET_SEQNUM_BITS) - 1)
+#define LSP_PACKET_SRCPORT_MAX ((1 << LSP_PACKET_SRCPORT_BITS) - 1)
+#define LSP_PACKET_DSTPORT_MAX ((1 << LSP_PACKET_DSTPORT_BITS) - 1)
+/**@}*/
+
+/** LSP typedef for address */
+typedef uint16_t lsp_addr_t; 
+
+/** Forward declaration for packet structure */
+typedef struct lsp_packet_s lsp_packet_t;
+
+/** Forward declaration for lsp buffer structure */
+typedef struct lsp_buffer_s lsp_buffer_t;
 
 #ifndef container_of
 #define container_of(ptr, type, member) ({ (type *)((char *)ptr - offsetof(type, member)); })

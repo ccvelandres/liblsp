@@ -7,8 +7,8 @@
 #include "lsp_list.h"
 #include "lsp_types.h"
 
-/** Forward declaration for lsp_interface*/
-typedef struct lsp_interface lsp_interface_t;
+/** Forward declaration for lsp_interface_s */
+typedef struct lsp_interface_s lsp_interface_t;
 
 /** LSP Interface operation functions*/
 typedef struct lsp_interface_ops
@@ -31,7 +31,7 @@ typedef struct lsp_interface_stats
 } lsp_interface_stats_t;
 
 /** LSP Interface main structure */
-typedef struct lsp_interface
+struct lsp_interface_s
 {
     int index;                   /** interface index (assigned on register) */
     char ifname[32];             /** interface name */
@@ -43,7 +43,7 @@ typedef struct lsp_interface
     lsp_interface_stats_t stats; /** interface stats */
     lsp_list_t list;             /** interface is implemented as linked list*/
     void *interface_data;        /** interface data, used by driver (retrieve with interface_getdata()) */
-} lsp_interface_t;
+};
 
 /**
  * @brief allocates memory for lsp_interface and initializes the queue

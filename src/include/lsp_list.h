@@ -3,9 +3,9 @@
 
 #include "lsp_memory.h"
 
-typedef struct lsp_list
+typedef struct lsp_list_s
 {
-    struct lsp_list *next, *prev;
+    struct lsp_list_s *next, *prev;
 } lsp_list_t;
 
 typedef lsp_list_t lsp_list_head_t;

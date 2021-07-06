@@ -34,6 +34,7 @@
 #define LSP_EVENT_RX_EVENT 1
 /**@}*/
 
+typedef uint16_t lsp_addr_t; /** LSP typedef for address */
 
 /**
  * @brief LSP Packet
@@ -43,8 +44,8 @@
  */
 typedef struct lsp_packet
 {
-    uint16_t dst_addr;
-    uint16_t src_addr;
+    lsp_addr_t dst_addr;
+    lsp_addr_t src_addr;
     uint16_t plen:10;
     uint16_t l2proto:6;
     uint16_t frag:3;

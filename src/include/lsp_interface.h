@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include "lsp_queue.h"
 #include "lsp_mutex.h"
+#include "lsp_list.h"
 
 typedef struct lsp_interface lsp_interface_t;
 
@@ -35,6 +36,7 @@ typedef struct lsp_interface
     lsp_queue_handle_t rx_queue; /** interface rx queue */
     lsp_queue_handle_t tx_queue; /** interface tx queue */
     lsp_interface_stats_t stats; /** interface stats */
+    lsp_list_t list;             /** interface is implemented as linked list*/
     void *interface_data;        /** interface data, used by driver (retrieve with interface_getdata()) */
 } lsp_interface_t;
 
@@ -52,14 +54,6 @@ lsp_interface_t *lsp_interface_alloc(int tx_queuelen,
                                      int rx_queuelen,
                                      size_t priv_len,
                                      const char *fmt, ...);
-
-/**
- * @brief registers the interface to the system
- * 
- * @param iface pointer to interface
- * @return int #LSP_ERR_NONE on success, otherwise an error code
- */
-int lsp_interface_register(lsp_interface_t *iface);
 
 /**
  * @brief Returns a pointer to interface data that can be used by interface drivers

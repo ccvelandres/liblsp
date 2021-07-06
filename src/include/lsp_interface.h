@@ -5,6 +5,7 @@
 #include "lsp_queue.h"
 #include "lsp_mutex.h"
 #include "lsp_list.h"
+#include "lsp_types.h"
 
 typedef struct lsp_interface lsp_interface_t;
 
@@ -30,6 +31,7 @@ typedef struct lsp_interface
 {
     int index;                   /** interface index (assigned on register) */
     char ifname[32];             /** interface name */
+    lsp_addr_t dev_addr;         /** interface address */
     int flags;                   /** interface flags. see #LSP_IF_FLAGS */
     uint32_t mtu;                /** max transmission unit of interface */
     lsp_interface_ops_t *ops;    /** interface functions */

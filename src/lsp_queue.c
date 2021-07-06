@@ -1,16 +1,32 @@
 #include "lsp_queue.h"
 #include "lsp_memory.h"
+#include "lsp_mutex.h"
 #include "lsp_log.h"
 
+#include "signal.h"
 #include "string.h"
+
+typedef struct _lsp_queue_entry
+{
+    size_t item_size;
+    void *data;
+} _lsp_queue_entry_t;
+
+typedef struct _lsp_queue_handle
+{
+    _lsp_queue_entry_t *arr;
+    sig_atomic_t length, head, tail;
+    size_t queue_size;
+    lsp_mutex_t mutex;
+} _lsp_queue_handle_t;
 
 lsp_queue_handle_t *lsp_queue_create(int length)
 {
-    lsp_queue_handle_t *hdl = lsp_calloc(1, sizeof(lsp_queue_handle_t));
+    _lsp_queue_handle_t *hdl = lsp_calloc(1, sizeof(_lsp_queue_handle_t));
     if (hdl == NULL)
         goto err;
 
-    hdl->arr = lsp_calloc(length, sizeof(lsp_queue_entry_t));
+    hdl->arr = lsp_calloc(length, sizeof(_lsp_queue_entry_t));
     if (hdl->arr == NULL)
         goto alloc_err;
     hdl->head = 0;
@@ -29,8 +45,8 @@ err:
 
 void lsp_queue_destroy(lsp_queue_handle_t *handle)
 {
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
-    lsp_queue_entry_t *entry;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry;
     lsp_mutex_lock(&hdl->mutex, -1);
 
     // walk through and free entries
@@ -48,8 +64,8 @@ void lsp_queue_destroy(lsp_queue_handle_t *handle)
 int lsp_queue_enqueue(lsp_queue_handle_t *handle, const void *const data, const size_t len, const int timeout)
 {
     int rc, idx;
-    lsp_queue_entry_t *entry;
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
@@ -81,8 +97,8 @@ err:
 int lsp_queue_enqueue_zc(lsp_queue_handle_t *handle, const void *const data, const size_t len, const int timeout)
 {
     int rc, idx;
-    lsp_queue_entry_t *entry;
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
@@ -110,8 +126,8 @@ err:
 int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const int timeout)
 {
     int rc;
-    lsp_queue_entry_t *entry;
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
     // rely on atomic size
     if (hdl->length == 0)
@@ -146,8 +162,8 @@ err:
 int lsp_queue_dequeue_zc(lsp_queue_handle_t *handle, void **data, size_t *len, const int timeout)
 {
     int rc;
-    lsp_queue_entry_t *entry;
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
 
     // rely on atomic size
     if (hdl->length == 0)
@@ -175,14 +191,14 @@ err:
 
 int lsp_queue_length(lsp_queue_handle_t *handle)
 {
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
     return hdl->queue_size;
 }
 
 int lsp_queue_peeksize(lsp_queue_handle_t *handle)
 {
     int rc;
-    lsp_queue_handle_t *hdl = (lsp_queue_handle_t *)handle;
-    lsp_queue_entry_t *entry = &hdl->arr[hdl->head];
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
+    _lsp_queue_entry_t *entry = &hdl->arr[hdl->head];
     return entry->item_size;
 }

@@ -139,7 +139,7 @@ int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const
         goto err;
 
     entry = &hdl->arr[hdl->head];
-    if (len < entry->item_size)
+    if (*len < entry->item_size)
     {
         rc = -LSP_ERR_NOMEM;
         goto mutex_err;

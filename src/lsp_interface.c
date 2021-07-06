@@ -5,7 +5,7 @@
 #include "stdarg.h"
 #include "stdio.h"
 
-lsp_interface_t *lsp_interface_alloc(int tx_queuelen, int rx_queuelen, size_t priv_len, const char *fmt, ...)
+lsp_interface_t *lsp_interface_alloc(int tx_queuelen, size_t priv_len, const char *fmt, ...)
 {
     int rc = -LSP_ERR_NOMEM;
     lsp_interface_t *iface = lsp_calloc(1, sizeof(lsp_interface_t) + priv_len);
@@ -13,8 +13,6 @@ lsp_interface_t *lsp_interface_alloc(int tx_queuelen, int rx_queuelen, size_t pr
 
     iface->tx_queue = lsp_queue_create(tx_queuelen);
     if(iface->tx_queue == NULL) goto txq_err;
-    iface->rx_queue = lsp_queue_create(rx_queuelen);
-    if(iface->rx_queue == NULL) goto rxq_err;
 
     va_list args;
     va_start(args, fmt);
@@ -25,7 +23,6 @@ lsp_interface_t *lsp_interface_alloc(int tx_queuelen, int rx_queuelen, size_t pr
 
     return iface;
 
-    lsp_free(iface->rx_queue);
 rxq_err:
     lsp_free(iface->tx_queue);
 txq_err:

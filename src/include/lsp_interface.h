@@ -7,15 +7,18 @@
 #include "lsp_list.h"
 #include "lsp_types.h"
 
+/** Forward declaration for lsp_interface*/
 typedef struct lsp_interface lsp_interface_t;
 
+/** LSP Interface operation functions*/
 typedef struct lsp_interface_ops
 {
-    int (*open)(lsp_interface_t *pv);
-    int (*close)(lsp_interface_t *pv);
-    int (*tx)(lsp_interface_t *pv, void *data, size_t len);
+    int (*open)(lsp_interface_t *pv); /** called by system to initialize interface */
+    int (*close)(lsp_interface_t *pv); /** called by system during shutdown */
+    int (*tx)(lsp_interface_t *pv, void *data, size_t len); /** used by system to transmit packets */
 } lsp_interface_ops_t;
 
+/** LSP Interface stats for monitoring*/
 typedef struct lsp_interface_stats
 {
     uint32_t tx_count; /** total transmitted packet count */
@@ -27,6 +30,7 @@ typedef struct lsp_interface_stats
     uint32_t rx_error; /** total receive errors */
 } lsp_interface_stats_t;
 
+/** LSP Interface main structure */
 typedef struct lsp_interface
 {
     int index;                   /** interface index (assigned on register) */
@@ -35,7 +39,6 @@ typedef struct lsp_interface
     int flags;                   /** interface flags. see #LSP_IF_FLAGS */
     uint32_t mtu;                /** max transmission unit of interface */
     lsp_interface_ops_t *ops;    /** interface functions */
-    lsp_queue_handle_t rx_queue; /** interface rx queue */
     lsp_queue_handle_t tx_queue; /** interface tx queue */
     lsp_interface_stats_t stats; /** interface stats */
     lsp_list_t list;             /** interface is implemented as linked list*/
@@ -46,14 +49,12 @@ typedef struct lsp_interface
  * @brief allocates memory for lsp_interface and initializes the queue
  * 
  * @param tx_queuelen max length of tx queue
- * @param rx_queuelen max length of rx queue
  * @param priv_len length of interface_data 
  * @param fmt format string for interface name
  * @param ... format args for interface name
  * @return lsp_interface_t* pointer to allocated memory on success, otherwise NULL
  */
 lsp_interface_t *lsp_interface_alloc(int tx_queuelen,
-                                     int rx_queuelen,
                                      size_t priv_len,
                                      const char *fmt, ...);
 

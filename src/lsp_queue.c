@@ -199,6 +199,7 @@ int lsp_queue_peeksize(lsp_queue_handle_t *handle)
 {
     int rc;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
-    _lsp_queue_entry_t *entry = &hdl->arr[hdl->head];
-    return entry->item_size;
+    if (hdl->length == 0)
+        return LSP_ERR_QUEUE_EMPTY;
+    return hdl->arr[hdl->head].item_size;
 }

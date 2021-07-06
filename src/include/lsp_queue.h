@@ -65,7 +65,19 @@ int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const
  */
 int lsp_queue_dequeue_zc(lsp_queue_handle_t *handle, void **data, size_t *len, const int timeout);
 
-
+/**
+ * @brief returns the length of queue
+ * 
+ * @param handle pointer to queue handle
+ * @return int length of queue
+ */
 int lsp_queue_len(lsp_queue_handle_t *handle);
+
+/**
+ * @brief returns the length of data from next queue entry
+ * 
+ * @param handle pointer to queue handle
+ * @return int length in bytes
+ */
 int lsp_queue_peeksize(lsp_queue_handle_t *handle);
 #endif

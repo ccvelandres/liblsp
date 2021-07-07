@@ -3,8 +3,32 @@
 
 #include "lsp_defaults_user.h"
 
+#ifndef LSP_DEFAULT_ADDR
+#define LSP_DEFAULT_ADDR 0xAE55
+#endif
+
+#ifndef LSP_DEFAULT_HOSTNAME
+#define LSP_DEFAULT_HOSTNAME "LSP Hostname"
+#endif
+
+#ifndef LSP_DEFAULT_MACHINENAME
+#define LSP_DEFAULT_MACHINENAME "LSP Machinename"
+#endif
+
+#ifndef LSP_DEFAULT_LSPREV
+#define LSP_DEFAULT_LSPREV "LSP Revision"
+#endif
+
 #ifndef LSP_DEFAULT_BUFFER_HEADER_LEN
 #define LSP_DEFAULT_BUFFER_HEADER_LEN 8
+#endif
+
+#ifndef LSP_DEFAULT_MAX_CONNECTIONS
+#define LSP_DEFAULT_MAX_CONNECTIONS 32
+#endif
+
+#ifndef LSP_DEFAULT_CONN_QUEUELEN
+#define LSP_DEFAULT_CONN_QUEUELEN 8
 #endif
 
 #endif

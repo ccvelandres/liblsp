@@ -5,6 +5,8 @@
 #include "stdarg.h"
 #include "stdio.h"
 
+static const char *tag = "lsp_interface";
+
 lsp_interface_t *lsp_interface_alloc(int tx_queuelen, size_t priv_len, const char *fmt, ...)
 {
     int rc = -LSP_ERR_NOMEM;
@@ -19,7 +21,7 @@ lsp_interface_t *lsp_interface_alloc(int tx_queuelen, size_t priv_len, const cha
     rc = vsnprintf(iface->ifname, sizeof(iface->ifname), fmt, args);
     va_end(args);
     if(!(rc > 0 && rc < sizeof(iface->ifname)))
-        lsp_warn("interface name might not be registered correctly: %s\n", iface->ifname);
+        lsp_warn(tag, "interface name might not be registered correctly: %s\n", iface->ifname);
 
     return iface;
 

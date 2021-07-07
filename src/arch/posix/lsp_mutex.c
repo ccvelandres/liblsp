@@ -4,6 +4,8 @@
 #include <time.h>
 #include <string.h>
 
+static const char *tag = "lsp_mutex";
+
 lsp_mutex_t *lsp_mutex_create()
 {
     return NULL;
@@ -13,7 +15,7 @@ int lsp_mutex_init(lsp_mutex_t *mutex)
     int rc = pthread_mutex_init(mutex, NULL);
     if (rc)
     {
-        lsp_verb("could not initialize mutex %d\n", rc);
+        lsp_verb(tag, "could not initialize mutex %d\n", rc);
         return LSP_ERR_MUTEX;
     }
     else
@@ -24,7 +26,7 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex)
     int rc = pthread_mutex_destroy(mutex);
     if (rc)
     {
-        lsp_verb("could not destroy mutex %d\n", rc);
+        lsp_verb(tag, "could not destroy mutex %d\n", rc);
         return LSP_ERR_MUTEX;
     }
     else
@@ -40,7 +42,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout)
     rc = pthread_mutex_timedlock(mutex, &abs_time);
     if (rc)
     {
-        lsp_verb("could not lock mutex %d\n", rc);
+        lsp_verb(tag, "could not lock mutex %d\n", rc);
         return LSP_ERR_MUTEX;
     }
     else
@@ -52,7 +54,7 @@ int lsp_mutex_unlock(lsp_mutex_t *mutex)
     int rc = pthread_mutex_unlock(mutex);
     if (rc)
     {
-        lsp_verb("could not unlock mutex %d\n", rc);
+        lsp_verb(tag, "could not unlock mutex %d\n", rc);
         return LSP_ERR_MUTEX;
     }
     else

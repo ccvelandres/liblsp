@@ -1,6 +1,8 @@
 #include "lsp_thread.h"
 #include "lsp_log.h"
 
+static const char *tag = "lsp_thread";
+
 int lsp_thread_create(lsp_thread_func_t func,
                       const char *name,
                       unsigned int stack_size,
@@ -12,7 +14,7 @@ int lsp_thread_create(lsp_thread_func_t func,
     int rc = pthread_create(handle, NULL, func, parameter);
     if(rc)
     {
-        lsp_verb("could not create pthread %d\n", rc);
+        lsp_verb(tag, "could not create pthread %d\n", rc);
         return LSP_ERR;
     }
     else 

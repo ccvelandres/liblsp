@@ -69,7 +69,7 @@ int lsp_queue_enqueue(lsp_queue_handle_t *handle, const void *const data, const 
 
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
-        return LSP_ERR_QUEUE_FULL;
+        return -LSP_ERR_QUEUE_FULL;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
@@ -102,7 +102,7 @@ int lsp_queue_enqueue_zc(lsp_queue_handle_t *handle, const void *const data, con
 
     // rely on atomic size
     if (hdl->length >= hdl->queue_size)
-        return LSP_ERR_QUEUE_FULL;
+        return -LSP_ERR_QUEUE_FULL;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
@@ -131,7 +131,7 @@ int lsp_queue_dequeue(lsp_queue_handle_t *handle, void *data, size_t *len, const
 
     // rely on atomic size
     if (hdl->length == 0)
-        return LSP_ERR_QUEUE_EMPTY;
+        return -LSP_ERR_QUEUE_EMPTY;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
@@ -167,7 +167,7 @@ int lsp_queue_dequeue_zc(lsp_queue_handle_t *handle, void **data, size_t *len, c
 
     // rely on atomic size
     if (hdl->length == 0)
-        return LSP_ERR_QUEUE_EMPTY;
+        return -LSP_ERR_QUEUE_EMPTY;
 
     // start of protected access
     rc = lsp_mutex_lock(&hdl->mutex, timeout);
@@ -200,6 +200,6 @@ int lsp_queue_peeksize(lsp_queue_handle_t *handle)
     int rc;
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
     if (hdl->length == 0)
-        return LSP_ERR_QUEUE_EMPTY;
+        return -LSP_ERR_QUEUE_EMPTY;
     return hdl->arr[hdl->head].item_size;
 }

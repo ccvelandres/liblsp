@@ -16,7 +16,7 @@ int lsp_mutex_init(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not initialize mutex %d\n", rc);
-        return LSP_ERR_MUTEX;
+        return -LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -27,7 +27,7 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not destroy mutex %d\n", rc);
-        return LSP_ERR_MUTEX;
+        return -LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -43,7 +43,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout)
     if (rc)
     {
         lsp_verb(tag, "could not lock mutex %d\n", rc);
-        return LSP_ERR_MUTEX;
+        return -LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -55,7 +55,7 @@ int lsp_mutex_unlock(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not unlock mutex %d\n", rc);
-        return LSP_ERR_MUTEX;
+        return -LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;

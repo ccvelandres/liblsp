@@ -73,7 +73,7 @@ typedef struct lsp_buffer_s lsp_buffer_t;
 #endif
 
 #ifndef ALIGNED_SIZEOF
-#define ALIGNED_SIZEOF(x) (((sizeof(x))/sizeof(void*) + 1) * sizeof(void*))
+#define ALIGNED_SIZEOF(x) ALIGNED_SIZE(sizeof(x))
 #endif
 
 #endif

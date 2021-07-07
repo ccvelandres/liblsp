@@ -18,11 +18,12 @@ typedef lsp_list_t lsp_list_head_t;
     lsp_list_head_t name = LSP_LIST_HEAD_INIT(name)
 
 /**
- * @brief initializes the list head
+ * @brief initializes the list head.
+ * Use LSP_LIST_HEAD_INIT for static list heads
  * 
  * @param head pointer to list head
  */
-static inline void lsp_list_init(lsp_list_head_t *head)
+static inline void lsp_list_head_init(lsp_list_head_t *head)
 {
     head->next = head;
     head->prev = head;

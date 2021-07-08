@@ -46,20 +46,20 @@ int lsp_queue_destroy(lsp_queue_handle_t handle);
  * 
  * @param handle pointer to queue handle
  * @param data pointer to data
- * @param timeout timeout in ms, -1 to block
+ * @param timeout timeout in ms, LSP_TIMEOUT_MAX to wait forever
  * @return int #LSP_ERR_NONE on success, otherwise an error code
  */
-int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const int timeout);
+int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint32_t timeout);
 
 /**
  * @brief pops data from queue
  * 
  * @param handle pointer to queue handle
  * @param data pointer to pointer
- * @param timeout timeout in ms, -1 to block
+ * @param timeout timeout in ms, LSP_TIMEOUT_MAX to wait forever
  * @return int #LSP_ERR_NONE on success, otherwise an error code
  */
-int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const int timeout);
+int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout);
 
 /**
  * @brief returns the length of queue

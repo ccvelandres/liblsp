@@ -46,10 +46,10 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex);
  * @brief lsp wrapper for locking mutexes
  * 
  * @param mutex pointer to mutex handle
- * @param timeout timeout in ms, use -1 for no timeout
+ * @param timeout timeout in ms, LSP_TIMEOUT_MAX to wait forever
  * @return int #LSP_ERR_NONE on success, otherwise #LSP_ERR_MUTEX or #LSP_ERR_TIMEOUT
  */
-int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout);
+int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout);
 
 /**
  * @brief lsp wrapper for unlocking mutexes

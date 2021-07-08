@@ -32,6 +32,11 @@
 #define LSP_PORT_ANY (255)
 #define LSP_ADDR_ANY (65535)
 
+#if (LSP_POSIX)
+#define LSP_TIMEOUT_MAX UINT32_MAX
+#endif
+
+
 /** Reserved ports for LSP services */
 typedef enum
 {
@@ -45,12 +50,13 @@ typedef enum
    @defgroup LSP_ERR LSP Error codes
    @{
 */
-#define LSP_ERR_NONE 0    /** Success */
-#define LSP_ERR 1         /** Generic error code */
-#define LSP_ERR_NOMEM 2   /** Insufficient resources */
-#define LSP_ERR_MUTEX 3   /** Mutex error */
-#define LSP_ERR_TIMEOUT 4 /** Timeout */
-#define LSP_ERR_INVALID 5 /** Invalid argument */
+#define LSP_ERR_NONE 0            /** Success */
+#define LSP_ERR 1                 /** Generic error code */
+#define LSP_ERR_NOMEM 2           /** Insufficient resources */
+#define LSP_ERR_MUTEX 3           /** Mutex error */
+#define LSP_ERR_TIMEOUT 4         /** Timeout */
+#define LSP_ERR_INVALID 5         /** Invalid argument */
+#define LSP_ERR_RESOURCE_IN_USE 5 /** Resource is in use */
 
 #define LSP_ERR_QUEUE_FULL 10  /** Queue full */
 #define LSP_ERR_QUEUE_EMPTY 11 /** Queue empty */
@@ -61,8 +67,8 @@ typedef enum
 #define LSP_ERR_ADDR_NOTFOUND 30 /** Address not found */
 #define LSP_ERR_ADDR_INVALID 31  /** Invalid address */
 
-#define LSP_ERR_SOCK_NOT_CONNECTED 40  /** Socket is not connected */
-#define LSP_ERR_SOCK_OPT_INVALID 41 /** Invalid sock opt arguments */
+#define LSP_ERR_SOCK_NOT_CONNECTED 40 /** Socket is not connected */
+#define LSP_ERR_SOCK_OPT_INVALID 41   /** Invalid sock opt arguments */
 
 #define LSP_ERR_CONN_FULL 40 /** Connection pool is full */
 /**@}*/
@@ -132,11 +138,11 @@ typedef struct lsp_connadddr_s lsp_sockaddr_t;
 #endif
 
 #ifndef IS_ALIGNED
-#define IS_ALIGNED(x) (x % sizeof(void*) == 0 || x % sizeof(int) == 0 || x == 1 || x == 2 ? 1 : 0)
+#define IS_ALIGNED(x) (x % sizeof(void *) == 0 || x % sizeof(int) == 0 || x == 1 || x == 2 ? 1 : 0)
 #endif
 
 #ifndef ALIGNED_SIZE
-#define ALIGNED_SIZE(x) ((((x)) / sizeof(void *) + (x % sizeof(void*) ? 1 : 0)) * sizeof(void *))
+#define ALIGNED_SIZE(x) ((((x)) / sizeof(void *) + (x % sizeof(void *) ? 1 : 0)) * sizeof(void *))
 #endif
 
 #ifndef ALIGNED_SIZEOF

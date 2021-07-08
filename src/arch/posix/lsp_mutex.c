@@ -52,27 +52,34 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex)
         return LSP_ERR_NONE;
 }
 
-int lsp_mutex_lock(lsp_mutex_t *mutex, int timeout)
+int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout)
 {
     int rc;
     struct timespec ts;
     
-    if(clock_gettime(CLOCK_REALTIME, &ts))
+    if(timeout == LSP_TIMEOUT_MAX)
     {
-        lsp_verb(tag, "could not get time for locking\n");
-        return -LSP_ERR_MUTEX;
+        rc = pthread_mutex_lock(mutex);
     }
-    
-    ts.tv_sec += timeout / 1000;
-    ts.tv_nsec += (timeout % 1000) * 1000000;
+    else {
+        if(clock_gettime(CLOCK_REALTIME, &ts))
+        {
+            lsp_verb(tag, "could not get time for locking\n");
+            return -LSP_ERR_MUTEX;
+        }
+        
+        ts.tv_sec += timeout / 1000;
+        ts.tv_nsec += (timeout % 1000) * 1000000;
 
-    if(ts.tv_nsec >= 1000000000)
-    {
-        ts.tv_sec += ts.tv_nsec / 1000000000;
-        ts.tv_nsec %= 1000000000;
+        if(ts.tv_nsec >= 1000000000)
+        {
+            ts.tv_sec += ts.tv_nsec / 1000000000;
+            ts.tv_nsec %= 1000000000;
+        }
+
+        rc = pthread_mutex_timedlock(mutex, &ts);
     }
 
-    rc = pthread_mutex_timedlock(mutex, &ts);
     if (rc)
     {
         lsp_verb(tag, "could not lock mutex %d:%s\n", rc, strerror(rc));

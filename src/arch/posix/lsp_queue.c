@@ -46,12 +46,12 @@ typedef struct _lsp_queue_handle
     uint8_t *data;
 } _lsp_queue_handle_t;
 
-static inline int queue_wait(pthread_cond_t *cond, pthread_mutex_t *mutex, int timeout)
+static inline int queue_wait(pthread_cond_t *cond, pthread_mutex_t *mutex, uint32_t timeout)
 {
     struct timespec ts;
     int rc;
 
-    if (timeout > 0)
+    if (timeout != LSP_TIMEOUT_MAX)
     {
         rc = clock_gettime(CLOCK_MONOTONIC, &ts);
         if (rc < 0)
@@ -148,7 +148,7 @@ int lsp_queue_destroy(lsp_queue_handle_t handle)
     lsp_free(hdl);
 }
 
-int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const int timeout)
+int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint32_t timeout)
 {
     int rc, idx;
     uint8_t *entryPtr;
@@ -185,7 +185,7 @@ err:
     return rc;
 }
 
-int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const int timeout)
+int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
 {
     int rc;
     void *entryPtr;

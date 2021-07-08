@@ -238,7 +238,7 @@ int lsp_queue_clear(lsp_queue_handle_t handle)
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
     if(hdl->waiting_empty || hdl->waiting_full)
         return LSP_ERR_RESOURCE_IN_USE;
-    lsp_mutex_lock(&hdl->mutex, -1);
+    lsp_mutex_lock(&hdl->mutex, LSP_TIMEOUT_MAX);
     hdl->head = 0;
     hdl->tail = 0;
     hdl->length = 0;

@@ -98,10 +98,11 @@ lsp_queue_handle_t lsp_queue_create(int length, size_t itemsize)
     if (!IS_ALIGNED(itemsize))
         lsp_warn(tag, "queue_create itemsize is unaligned and mem alignment is disabled\n");
 #endif
-    hdl = lsp_calloc(1, blocksize);
+    hdl = lsp_malloc(blocksize);
     if (hdl == NULL)
         goto err;
 
+    memset(hdl, 0, blocksize);
     if (lsp_mutex_init(&hdl->mutex) != LSP_ERR_NONE ||
         queue_init_pthread_cond(&hdl->cond_full) != 0 ||
         queue_init_pthread_cond(&hdl->cond_empty) != 0)

@@ -20,6 +20,8 @@
 #include "lsp_thread.h"
 #include "lsp_log.h"
 
+#include "string.h"
+
 static const char *tag = "lsp_thread";
 
 int lsp_thread_create(lsp_thread_func_t func,
@@ -33,7 +35,7 @@ int lsp_thread_create(lsp_thread_func_t func,
     int rc = pthread_create(handle, NULL, func, parameter);
     if(rc)
     {
-        lsp_verb(tag, "could not create pthread %d\n", rc);
+        lsp_verb(tag, "could not create pthread %d:%s\n", rc, strerror(rc));
         return LSP_ERR;
     }
     else 

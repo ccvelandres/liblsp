@@ -55,11 +55,11 @@ void _lsp_abort();
     if (LSP_LOGL >= logl)               \
     _lsp_log(logl, prefix fmt, ##__VA_ARGS__)
 
-#define lsp_err(tag, fmt, ...) lsp_log(LSP_LOGL_ERROR, "E: %s ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
-#define lsp_warn(tag, fmt, ...) lsp_log(LSP_LOGL_WARNING, "W: %s ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
-#define lsp_info(tag, fmt, ...) lsp_log(LSP_LOGL_INFO, "I: %s ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
-#define lsp_dbg(tag, fmt, ...) lsp_log(LSP_LOGL_DEBUG, "D: %s ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
-#define lsp_verb(tag, fmt, ...) lsp_log(LSP_LOGL_VERBOSE, "V: %s ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
+#define lsp_err(tag, fmt, ...) lsp_log(LSP_LOGL_ERROR, "E: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
+#define lsp_warn(tag, fmt, ...) lsp_log(LSP_LOGL_WARNING, "W: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
+#define lsp_info(tag, fmt, ...) lsp_log(LSP_LOGL_INFO, "I: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
+#define lsp_dbg(tag, fmt, ...) lsp_log(LSP_LOGL_DEBUG, "D: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
+#define lsp_verb(tag, fmt, ...) lsp_log(LSP_LOGL_VERBOSE, "V: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
 
 #define LSP_ASSERT(cond, msg, ...)                                  \
     if (!cond)                                                      \

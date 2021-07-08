@@ -13,7 +13,7 @@ static lsp_conf_t _lsp_conf = {
 
 const lsp_conf_t *const lsp_conf = &_lsp_conf;
 
-int lsp_init_conf(lsp_conf_t *conf)
+int lsp_conf_init(lsp_conf_t *conf)
 {
     if (conf == NULL)
     {

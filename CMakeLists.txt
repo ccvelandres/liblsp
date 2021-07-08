@@ -24,6 +24,7 @@ set(CMAKE_C_STANDARD 11)
 set (LSP_SOURCES
 ${CMAKE_SOURCE_DIR}/src/lsp_iflist.c
 ${CMAKE_SOURCE_DIR}/src/lsp_buffer.c
+${CMAKE_SOURCE_DIR}/src/lsp_conf.c
 ${CMAKE_SOURCE_DIR}/src/port/generic/lsp_log.c
 ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_queue.c
 ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_memory.c

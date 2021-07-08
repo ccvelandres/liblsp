@@ -97,6 +97,13 @@ static inline void lsp_list_del(lsp_list_t *n)
 }
 
 /**
+ * @brief checks whether the list is empty
+ * 
+ */
+#define lsp_list_is_empty(head) \
+    ((head)->next == (head)->prev ? 1 : 0)
+
+/**
  * @brief iterate through the list
  * 
  * @param ptr the &struct list_head as cursor

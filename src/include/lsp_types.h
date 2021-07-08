@@ -131,8 +131,12 @@ typedef struct lsp_connadddr_s lsp_sockaddr_t;
 #define container_of(ptr, type, member) ({ (type *)((char *)ptr - offsetof(type, member)); })
 #endif
 
+#ifndef IS_ALIGNED
+#define IS_ALIGNED(x) (x % sizeof(void*) == 0 || x % sizeof(int) == 0 || x == 1 || x == 2 ? 1 : 0)
+#endif
+
 #ifndef ALIGNED_SIZE
-#define ALIGNED_SIZE(x) ((((x)) / sizeof(void *) + 1) * sizeof(void *))
+#define ALIGNED_SIZE(x) ((((x)) / sizeof(void *) + (x % sizeof(void*) ? 1 : 0)) * sizeof(void *))
 #endif
 
 #ifndef ALIGNED_SIZEOF

@@ -62,7 +62,7 @@ void _lsp_abort();
 #define lsp_verb(tag, fmt, ...) lsp_log(LSP_LOGL_VERBOSE, "V: (%s) ", lsp_fmt(fmt), tag, ##__VA_ARGS__)
 
 #define LSP_ASSERT(cond, msg, ...)                                  \
-    if (!cond)                                                      \
+    if (!(cond))                                                      \
     {                                                               \
         _lsp_log(LSP_LOGL_ERROR, "ASSERT FAIL: \"" #cond "\" " msg, ##__VA_ARGS__); \
         _lsp_flush();                                               \

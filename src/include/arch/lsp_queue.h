@@ -39,7 +39,7 @@ lsp_queue_handle_t lsp_queue_create(int len, size_t itemsize);
  * 
  * @param handle pointer to queue handle
  */
-void lsp_queue_destroy(lsp_queue_handle_t handle);
+int lsp_queue_destroy(lsp_queue_handle_t handle);
 
 /**
  * @brief pushes data to queue
@@ -76,4 +76,12 @@ int lsp_queue_len(lsp_queue_handle_t handle);
  * @return int length in bytes
  */
 int lsp_queue_itemsize(lsp_queue_handle_t handle);
+
+/**
+ * @brief clears the queue
+ * 
+ * @param handle 
+ * @return int 
+ */
+int lsp_queue_clear(lsp_queue_handle_t handle);
 #endif

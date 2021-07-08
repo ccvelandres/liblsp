@@ -39,7 +39,7 @@ static const char *tag = "posix/lsp_queue";
 /** struct and buffer is implemented as contiguous chunk */
 typedef struct _lsp_queue_handle
 {
-    sig_atomic_t length, head, tail;
+    sig_atomic_t length, head, tail, waiting_full, waiting_empty;
     size_t queue_size, itemsize;
     lsp_mutex_t mutex;
     pthread_cond_t cond_full, cond_empty;
@@ -137,9 +137,11 @@ err:
     return NULL;
 }
 
-void lsp_queue_destroy(lsp_queue_handle_t handle)
+int lsp_queue_destroy(lsp_queue_handle_t handle)
 {
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
+    if(hdl->waiting_empty || hdl->waiting_full)
+        return LSP_ERR_RESOURCE_IN_USE;
     pthread_cond_destroy(&hdl->cond_empty);
     pthread_cond_destroy(&hdl->cond_full);
     lsp_mutex_destroy(&hdl->mutex);
@@ -159,7 +161,9 @@ int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const int 
 
     if (hdl->length >= hdl->queue_size)
     {
+        hdl->waiting_full++;
         rc = queue_wait(&hdl->cond_full, &hdl->mutex, timeout);
+        hdl->waiting_full--;
         if (rc)
         {
             rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
@@ -194,7 +198,9 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const int timeout)
 
     if (hdl->length <= 0)
     {
+        hdl->waiting_empty++;
         rc = queue_wait(&hdl->cond_empty, &hdl->mutex, timeout);
+        hdl->waiting_empty--;
         if (rc)
         {
             rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
@@ -225,4 +231,17 @@ int lsp_queue_itemsize(lsp_queue_handle_t handle)
 {
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
     return hdl->itemsize;
+}
+
+int lsp_queue_clear(lsp_queue_handle_t handle)
+{
+    _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
+    if(hdl->waiting_empty || hdl->waiting_full)
+        return LSP_ERR_RESOURCE_IN_USE;
+    lsp_mutex_lock(&hdl->mutex, -1);
+    hdl->head = 0;
+    hdl->tail = 0;
+    hdl->length = 0;
+    lsp_mutex_unlock(&hdl->mutex);
+    return LSP_ERR_NONE;
 }

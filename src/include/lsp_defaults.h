@@ -47,7 +47,7 @@
 #endif
 
 #ifndef LSP_DEFAULT_CONN_QUEUELEN
-#define LSP_DEFAULT_CONN_QUEUELEN 8
+#define LSP_DEFAULT_CONN_QUEUELEN 4
 #endif
 
 #endif

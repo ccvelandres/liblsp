@@ -74,7 +74,7 @@ struct lsp_conn_s
     lsp_connattr_t attr; /** Connection attributes */
     lsp_list_t portlist; /** linked list for port connections */
     union {
-        lsp_list_head_t children; /** linked list for child connections */
+        lsp_queue_handle_t children; /** queue for child connections */
         lsp_conn_t *parent;   /** parent connection */
     };
     uint8_t port;             /** Connection port */

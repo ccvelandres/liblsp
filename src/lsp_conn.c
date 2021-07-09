@@ -101,8 +101,8 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type)
     conn->port = LSP_PORT_ANY;
     conn->parent = NULL;
     conn->attr = def_conn_attr;
-    if(conn->type == CONN_SERVER)
-        lsp_list_head_init(&conn->children);
+    conn->type = type;
+    conn->parent = NULL;
 
     return conn;
 err:
@@ -134,6 +134,10 @@ int lsp_conn_close(lsp_conn_t *conn)
     rc = lsp_queue_destroy(conn->rx_queue);
     if(rc != LSP_ERR_NONE) goto end;
 #endif
+
+    if(conn->type == CONN_SERVER)
+        lsp_queue_destroy(conn->children);
+
 
 end:
     return rc;

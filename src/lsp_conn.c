@@ -99,15 +99,13 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type)
 
     conn->state = CONN_CLOSED;
     conn->port = LSP_PORT_ANY;
-    if (type == CONN_SERVER)
-        lsp_list_head_init(&conn->children);
+    conn->parent = NULL;
     conn->attr = def_conn_attr;
 
     return conn;
 err:
     return NULL;
 }
-
 
 int lsp_conn_close(lsp_conn_t *conn)
 {
@@ -123,19 +121,7 @@ int lsp_conn_close(lsp_conn_t *conn)
 
     // Set connection to closed
     conn->state = CONN_CLOSED;
-    
-    // check if connection has children
-    if(conn->type == CONN_SERVER)
-        if(!lsp_list_is_empty(&conn->children))
-        {
-            // unlink child connections
-            lsp_warn(tag, "lsp_conn_close warning closing connection with children");
-            lsp_list_for(child, childlist, &conn->children)
-            {
-                child->parent = NULL;
-                lsp_list_del(&child->childlist);
-            }
-        }
+    lsp_list_del(&conn->portlist);
     
     // flush rxq
     rc = lsp_conn_rxq_flush(conn);
@@ -146,6 +132,18 @@ int lsp_conn_close(lsp_conn_t *conn)
     rc = lsp_queue_destroy(conn->rx_queue);
     if(rc != LSP_ERR_NONE) goto end;
 #endif
+
+end:
+    return rc;
+}
+
+int lsp_conn_free(lsp_conn_t *conn)
+{
+    int rc;
+    if(conn->state != CONN_CLOSED)
+        rc = lsp_conn_close(conn);
+
+    if(rc != LSP_ERR_NONE) goto end;
 
     // free the connection
     conn->state = CONN_FREE;

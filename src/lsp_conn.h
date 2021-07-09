@@ -29,8 +29,7 @@
 typedef enum lsp_conn_type_e
 {
     CONN_CLIENT,
-    CONN_SERVER,
-    CONN_CHILD
+    CONN_SERVER
 } lsp_conn_type_t;
 
 /** LSP Connection states */
@@ -73,18 +72,8 @@ struct lsp_conn_s
     lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
     lsp_conn_state_t state; /** Connection state */
     lsp_connattr_t attr; /** Connection attributes */
-    union
-    {
-        struct
-        {
-            lsp_list_head_t children; /** child connections */
-        };
-        struct
-        {
-            lsp_list_t childlist; /** linked list for child connections */
-            lsp_conn_t *parent;   /** parent connection */
-        };
-    };
+    lsp_list_head_t portlist; /** linked list for port connections */
+    lsp_conn_t *parent;   /** parent connection */
     lsp_port_t port;             /** Connection port */
     uint32_t timestamp;          /** Time the connection was opened */
     lsp_queue_handle_t rx_queue; /** Queue for connection packets */
@@ -112,6 +101,15 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type);
  * @return int LSP_ERR_NONE on success, otherwise an error code
  */
 int lsp_conn_close(lsp_conn_t *conn);
+
+/**
+ * @brief frees the connection and returns it to the pool.
+ * Internally calls lsp_conn_close if the connection is not yet closed
+ * 
+ * @param conn connection
+ * @return int LSP_ERR_NONE on success, otherwise an error code
+ */
+int lsp_conn_free(lsp_conn_t *conn);
 
 /**
  * @brief flushes the rx queue of the connection

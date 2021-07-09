@@ -72,8 +72,11 @@ struct lsp_conn_s
     lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
     lsp_conn_state_t state; /** Connection state */
     lsp_connattr_t attr; /** Connection attributes */
-    lsp_list_head_t portlist; /** linked list for port connections */
-    lsp_conn_t *parent;   /** parent connection */
+    lsp_list_t portlist; /** linked list for port connections */
+    union {
+        lsp_list_head_t children; /** linked list for child connections */
+        lsp_conn_t *parent;   /** parent connection */
+    };
     lsp_port_t port;             /** Connection port */
     uint32_t timestamp;          /** Time the connection was opened */
     lsp_queue_handle_t rx_queue; /** Queue for connection packets */

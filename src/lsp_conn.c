@@ -101,6 +101,8 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type)
     conn->port = LSP_PORT_ANY;
     conn->parent = NULL;
     conn->attr = def_conn_attr;
+    if(conn->type == CONN_SERVER)
+        lsp_list_head_init(&conn->children);
 
     return conn;
 err:

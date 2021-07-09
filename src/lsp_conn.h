@@ -49,26 +49,45 @@ typedef enum lsp_sockopt_e
     LSP_SOCKOPTS_SETPRIO /** Set the socket priority */
 } lsp_sockopt_t;
 
-/** LSP Connection struct */
-struct lsp_conn_s
-{
-    lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
-    lsp_conn_state_t state; /** Connection state */
-    union
-    {
-        lsp_list_head_t child; /** child connections */
-        lsp_conn_t *parent;     /** parent connection */
-    };
-    lsp_port_t port;             /** Connection port */
-    uint32_t timestamp;          /** Time the connection was opened */
-    lsp_queue_handle_t rx_queue; /** Queue for connection packets */
-};
-
 /** LSP Connection address struct */
 struct lsp_connadddr_s
 {
     lsp_port_t port;
     lsp_addr_t addr;
+};
+
+/** LSP Connection attributes */
+struct lsp_connattr_s
+{
+    uint8_t priority; /** Connection priority */
+    lsp_port_t sport; /** Source port */
+    lsp_addr_t saddr; /** Source address */
+    lsp_port_t rport;  /** Remote Port */
+    lsp_addr_t raddr; /** Remote Address */
+    uint32_t flags; /** Connection Flags */
+};
+
+/** LSP Connection struct */
+struct lsp_conn_s
+{
+    lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
+    lsp_conn_state_t state; /** Connection state */
+    lsp_connattr_t attr; /** Connection attributes */
+    union
+    {
+        struct
+        {
+            lsp_list_head_t children; /** child connections */
+        };
+        struct
+        {
+            lsp_list_t childlist; /** linked list for child connections */
+            lsp_conn_t *parent;   /** parent connection */
+        };
+    };
+    lsp_port_t port;             /** Connection port */
+    uint32_t timestamp;          /** Time the connection was opened */
+    lsp_queue_handle_t rx_queue; /** Queue for connection packets */
 };
 
 /**
@@ -101,6 +120,6 @@ int lsp_conn_close(lsp_conn_t *conn);
  * @param buffer buffer
  * @return int 
  */
-int lsp_conn_rxq(lsp_conn_t *conn, lsp_buffer_t *buffer);
+int lsp_conn_rxq_push(lsp_conn_t *conn, lsp_buffer_t *buffer);
 
 #endif

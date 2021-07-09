@@ -161,12 +161,18 @@ int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint
 
     if (hdl->length >= hdl->queue_size)
     {
-        hdl->waiting_full++;
-        rc = queue_wait(&hdl->cond_full, &hdl->mutex, timeout);
-        hdl->waiting_full--;
-        if (rc)
-        {
-            rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
+        if(timeout > 0){
+            hdl->waiting_full++;
+            rc = queue_wait(&hdl->cond_full, &hdl->mutex, timeout);
+            hdl->waiting_full--;
+            if (rc)
+            {
+                rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
+                goto mutex_err;
+            }
+        }
+        else {
+            rc = LSP_ERR_QUEUE_FULL;
             goto mutex_err;
         }
     }
@@ -198,12 +204,19 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
 
     if (hdl->length <= 0)
     {
-        hdl->waiting_empty++;
-        rc = queue_wait(&hdl->cond_empty, &hdl->mutex, timeout);
-        hdl->waiting_empty--;
-        if (rc)
+        if(timeout > 0)
         {
-            rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
+            hdl->waiting_empty++;
+            rc = queue_wait(&hdl->cond_empty, &hdl->mutex, timeout);
+            hdl->waiting_empty--;
+            if (rc)
+            {
+                rc = rc == ETIMEDOUT ? LSP_ERR_TIMEOUT : LSP_ERR_INVALID;
+                goto mutex_err;
+            }
+        }
+        else {
+            rc = LSP_ERR_QUEUE_EMPTY;
             goto mutex_err;
         }
     }
@@ -214,6 +227,7 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
 
     hdl->head = ++hdl->head % hdl->queue_size;
     hdl->length--;
+    pthread_cond_signal(&hdl->cond_full);
     rc = LSP_ERR_NONE;
 mutex_err:
     lsp_mutex_unlock(&hdl->mutex);

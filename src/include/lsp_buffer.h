@@ -86,8 +86,9 @@ void *lsp_buffer_push(lsp_buffer_t *buff, size_t len);
  * @brief frees the buffer
  * 
  * @param buff pointer to buffer
+ * @return int LSP_ERR_NONE on success, otherwise an error code
  */
-void lsp_buffer_free(lsp_buffer_t *buff);
+int lsp_buffer_free(lsp_buffer_t *buff);
 
 void lsp_buffer_debug(lsp_buffer_t *buff);
 

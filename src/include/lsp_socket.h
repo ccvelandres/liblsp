@@ -67,20 +67,20 @@ int lsp_listen(lsp_socket_t sock, int backlog);
  * 
  * @param sock socket
  * @param timeout timeout in ms
- * @return int LSP_ERR_NONE on success, otherwise LSP_ERR_TIMEOUT
+ * @return lsp_socket_t pointer to child socket, NULL on timeout
  */
-int lsp_accept(lsp_socket_t sock, uint32_t timeout);
+lsp_socket_t lsp_accept(lsp_socket_t sock, uint32_t timeout);
 
 /**
  * Connects the socket to remote socket. 
  * This call returns immediately unless protocol requires acknowledgement. (ack not yet supported anyway)
  * 
  * @param sock socket
- * @param addr pointer to sockaddr
+ * @param sockaddr pointer to sockaddr
  * @param addrlen not currently used but should be sizeof(lsp_sockaddr_t) for future compatibility
  * @return int LSP_ERR_NONE on success, otherwise an error code
  */
-int lsp_connect(lsp_socket_t sock, lsp_sockaddr_t *addr, size_t addrlen);
+int lsp_connect(lsp_socket_t sock, lsp_sockaddr_t *sockaddr, size_t addrlen);
 
 /**
  * @brief Send data on connected socket
@@ -100,11 +100,11 @@ int lsp_send(lsp_socket_t sock, const void *buf, size_t buflen, uint32_t flags);
  * @param buf pointer to data
  * @param buflen length of data
  * @param flags not currently used
- * @param dstaddr pointer to sockaddr
+ * @param sockaddr pointer to sockaddr with destination address
  * @param addrlen not currently used but should be sizeof(lsp_sockaddr_t) for future compatibility
  * @return int number of bytes sent, otherwise an error code
  */
-int lsp_sendto(lsp_socket_t sock, const void *buf, size_t buflen, uint32_t flags, lsp_sockaddr_t *dstaddr, size_t addrlen);
+int lsp_sendto(lsp_socket_t sock, const void *buf, size_t buflen, uint32_t flags, lsp_sockaddr_t *sockaddr, size_t addrlen);
 
 /**
  * @brief Receives data from connected socket.
@@ -126,11 +126,11 @@ int lsp_recv(lsp_socket_t sock, void *buf, size_t buflen, uint32_t flags);
  * @param buf pointer to buffer
  * @param buflen buffer length
  * @param flags not currently used
- * @param srcaddr pointer to sockaddr
+ * @param sockaddr pointer to sockaddr with source address
  * @param addrlen not currently used but should be sizeof(lsp_sockaddr_t) for future compatibility
  * @return int number of bytes written, otherwise an error code
  */
-int lsp_recvfrom(lsp_socket_t sock, void *buf, size_t buflen, uint32_t flags, lsp_sockaddr_t *srcaddr, size_t addrlen);
+int lsp_recvfrom(lsp_socket_t sock, void *buf, size_t buflen, uint32_t flags, lsp_sockaddr_t *sockaddr, size_t addrlen);
 
 /**
  * @brief Set a socket option

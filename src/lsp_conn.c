@@ -65,7 +65,7 @@ int lsp_conn_init()
     return LSP_ERR_NONE;
 }
 
-lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type)
+lsp_conn_t *lsp_conn_alloc()
 {
     int rc;
     lsp_conn_t *conn = NULL;
@@ -101,7 +101,6 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type)
     conn->port = LSP_PORT_ANY;
     conn->parent = NULL;
     conn->attr = def_conn_attr;
-    conn->type = type;
     conn->parent = NULL;
 
     return conn;

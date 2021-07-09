@@ -92,10 +92,9 @@ int lsp_conn_init();
 /**
  * @brief allocate new connection
  * 
- * @param type type
  * @return lsp_conn_t* pointer on success, otherwise NULL
  */
-lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type);
+lsp_conn_t *lsp_conn_alloc();
 
 /**
  * @brief closes the connection

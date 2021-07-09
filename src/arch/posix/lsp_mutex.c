@@ -35,7 +35,7 @@ int lsp_mutex_init(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not initialize mutex %d:%s", rc, strerror(rc));
-        return -LSP_ERR_MUTEX;
+        return LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -46,7 +46,7 @@ int lsp_mutex_destroy(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not destroy mutex %d:%s\n", rc, strerror(rc));
-        return -LSP_ERR_MUTEX;
+        return LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -65,7 +65,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout)
         if(clock_gettime(CLOCK_REALTIME, &ts))
         {
             lsp_verb(tag, "could not get time for locking\n");
-            return -LSP_ERR_MUTEX;
+            return LSP_ERR_MUTEX;
         }
         
         ts.tv_sec += timeout / 1000;
@@ -83,7 +83,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout)
     if (rc)
     {
         lsp_verb(tag, "could not lock mutex %d:%s\n", rc, strerror(rc));
-        return -LSP_ERR_MUTEX;
+        return LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
@@ -95,7 +95,7 @@ int lsp_mutex_unlock(lsp_mutex_t *mutex)
     if (rc)
     {
         lsp_verb(tag, "could not unlock mutex %d:%s\n", rc, strerror(rc));
-        return -LSP_ERR_MUTEX;
+        return LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;

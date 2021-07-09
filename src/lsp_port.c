@@ -39,7 +39,7 @@ int lsp_port_init()
     if(ports == NULL)
     {
         lsp_verb(tag, "could not allocate port resources\n");
-        return -LSP_ERR_NOMEM;
+        return LSP_ERR_NOMEM;
     }
     memset(ports, 0, blocksize);
     lsp_verb(tag, "lsp_port_init allocated %d bytes for ports poolsize: %d connsize: %d\n", blocksize, LSP_PACKET_PORT_MAX + 2, sizeof(lsp_port_t));

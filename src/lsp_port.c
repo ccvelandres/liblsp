@@ -23,6 +23,8 @@
 #include "lsp_conn.h"
 #include "lsp_log.h"
 
+#include "string.h"
+
 static const char *tag = "lsp_port";
 
 /** Port list */

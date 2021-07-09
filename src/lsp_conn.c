@@ -134,10 +134,6 @@ int lsp_conn_close(lsp_conn_t *conn)
     if(rc != LSP_ERR_NONE) goto end;
 #endif
 
-    if(conn->type == CONN_SERVER)
-        lsp_queue_destroy(conn->children);
-
-
 end:
     return rc;
 }
@@ -147,8 +143,11 @@ int lsp_conn_free(lsp_conn_t *conn)
     int rc;
     if(conn->state != CONN_CLOSED)
         rc = lsp_conn_close(conn);
-
     if(rc != LSP_ERR_NONE) goto end;
+
+    if(conn->type == CONN_SERVER){
+        lsp_queue_destroy(conn->children);
+    }
 
     // free the connection
     conn->state = CONN_FREE;

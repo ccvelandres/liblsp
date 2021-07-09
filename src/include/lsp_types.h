@@ -31,11 +31,12 @@
 #define LSPPROTO_LSP (46)
 #define LSP_PORT_ANY (255)
 #define LSP_ADDR_ANY (65535)
+#define LSP_CONN_PRIO_MAX 7
+#define LSP_CONN_PRIO_DEF 4
 
 #if (LSP_POSIX)
 #define LSP_TIMEOUT_MAX UINT32_MAX
 #endif
-
 
 /** Reserved ports for LSP services */
 typedef enum
@@ -126,6 +127,9 @@ typedef struct lsp_buffer_s lsp_buffer_t;
 
 /** Forward declaration for connection structure */
 typedef struct lsp_conn_s lsp_conn_t;
+
+/** Forward declaration for connection attribute structure */
+typedef struct lsp_connattr_s lsp_connattr_t;
 
 /** Forward declaration for socket structure */
 typedef struct lsp_conn_s *lsp_socket_t;

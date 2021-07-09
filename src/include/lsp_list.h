@@ -106,9 +106,9 @@ static inline void lsp_list_del(lsp_list_t *n)
 /**
  * @brief iterate through the list
  * 
- * @param ptr the &struct list_head as cursor
- * @param member name of list_head in the struct ptr
- * @param head the head of the list
+ * @param ptr the &struct as cursor
+ * @param member name of list_t in the struct ptr
+ * @param head ptr to list_head
  */
 #define lsp_list_for(ptr, member, head)                                                                    \
     for (ptr = ((head)->next != (head)->prev ? container_of((head)->next, typeof(*(ptr)), member) : NULL); \
@@ -119,8 +119,9 @@ static inline void lsp_list_del(lsp_list_t *n)
 /**
  * @brief iterator through list backwards
  * 
- * @param ptr the struct list_head
- * @param head the head of the list
+ * @param ptr the &struct as cursor
+ * @param member name of list_t in the struct ptr
+ * @param head ptr to list_head
  */
 #define lsp_list_for_back(ptr, member, head)                                                               \
     for (ptr = ((head)->next != (head)->prev ? container_of((head)->prev, typeof(*(ptr)), member) : NULL); \

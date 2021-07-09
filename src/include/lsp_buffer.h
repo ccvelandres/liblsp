@@ -33,8 +33,8 @@ struct lsp_packet_s
     uint16_t proto : LSP_PACKET_PROTO_BITS;      /** Payload Protocol*/
     uint16_t frag : LSP_PACKET_FRAG_BITS;        /** Fragmentation */
     uint16_t seqnum : LSP_PACKET_SEQNUM_BITS;    /** Sequence Number */
-    uint16_t src_port : LSP_PACKET_SRCPORT_BITS; /** Source Port */
-    uint16_t dst_port : LSP_PACKET_DSTPORT_BITS; /** Destination Port */
+    uint16_t src_port : LSP_PACKET_PORT_BITS; /** Source Port */
+    uint16_t dst_port : LSP_PACKET_PORT_BITS; /** Destination Port */
 
     union
     {

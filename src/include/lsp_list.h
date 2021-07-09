@@ -69,7 +69,7 @@ static inline void _lsp_list_add(lsp_list_t *n, lsp_list_t *prev, lsp_list_t *ne
  * @param n pointer to node to insert
  * @param head pointer to head
  */
-static inline void lsp_list_add(lsp_list_t *n, lsp_list_t *head)
+static inline void lsp_list_add(lsp_list_t *n, lsp_list_head_t *head)
 {
     _lsp_list_add(n, head, head->next);
 }
@@ -80,9 +80,31 @@ static inline void lsp_list_add(lsp_list_t *n, lsp_list_t *head)
  * @param n pointer to node to insert
  * @param head pointer to head
  */
-static inline void lsp_list_add_tail(lsp_list_t *n, lsp_list_t *head)
+static inline void lsp_list_add_tail(lsp_list_t *n, lsp_list_head_t *head)
 {
     _lsp_list_add(n, head->prev, head);
+}
+
+/**
+ * @brief insert n after node
+ * 
+ * @param n node to insert
+ * @param node positional node
+ */
+static inline void lsp_list_insert_after(lsp_list_t *n, lsp_list_t *node)
+{
+    _lsp_list_add(n, node, node->next);
+}
+
+/**
+ * @brief insert n before node
+ * 
+ * @param n node to insert
+ * @param node positional node
+ */
+static inline void lsp_list_insert_before(lsp_list_t *n, lsp_list_t *node)
+{
+    _lsp_list_add(n, node->prev, node);
 }
 
 /**

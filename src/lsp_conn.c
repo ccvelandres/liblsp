@@ -141,11 +141,16 @@ end:
 int lsp_conn_free(lsp_conn_t *conn)
 {
     int rc;
+    lsp_socket_t sock;
     if(conn->state != CONN_CLOSED)
         rc = lsp_conn_close(conn);
     if(rc != LSP_ERR_NONE) goto end;
 
     if(conn->type == CONN_SERVER){
+        while(lsp_queue_pop(conn->children, &sock, 0) != LSP_ERR_QUEUE_EMPTY)
+        {
+            lsp_conn_free(sock);
+        }
         lsp_queue_destroy(conn->children);
     }
 

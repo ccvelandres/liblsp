@@ -51,7 +51,7 @@ typedef enum lsp_sockopt_e
 /** LSP Connection address struct */
 struct lsp_connadddr_s
 {
-    lsp_port_t port;
+    uint8_t port;
     lsp_addr_t addr;
 };
 
@@ -59,9 +59,9 @@ struct lsp_connadddr_s
 struct lsp_connattr_s
 {
     uint8_t priority; /** Connection priority */
-    lsp_port_t sport; /** Source port */
+    uint8_t sport; /** Source port */
     lsp_addr_t saddr; /** Source address */
-    lsp_port_t rport;  /** Remote Port */
+    uint8_t rport;  /** Remote Port */
     lsp_addr_t raddr; /** Remote Address */
     uint32_t flags; /** Connection Flags */
 };
@@ -77,7 +77,7 @@ struct lsp_conn_s
         lsp_list_head_t children; /** linked list for child connections */
         lsp_conn_t *parent;   /** parent connection */
     };
-    lsp_port_t port;             /** Connection port */
+    uint8_t port;             /** Connection port */
     uint32_t timestamp;          /** Time the connection was opened */
     lsp_queue_handle_t rx_queue; /** Queue for connection packets */
 };

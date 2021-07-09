@@ -111,9 +111,6 @@ typedef enum
 /** LSP typedef for address */
 typedef uint16_t lsp_addr_t;
 
-/** LSP typedef for port */
-typedef uint8_t lsp_port_t;
-
 /** Forward declaration for conf structure */
 typedef struct lsp_conf_s lsp_conf_t;
 

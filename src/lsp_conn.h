@@ -29,7 +29,8 @@
 typedef enum lsp_conn_type_e
 {
     CONN_CLIENT,
-    CONN_SERVER
+    CONN_SERVER,
+    CONN_CHILD
 } lsp_conn_type_t;
 
 /** LSP Connection states */

@@ -42,7 +42,7 @@ int lsp_conf_init(lsp_conf_t *conf)
 
     if(conf->addr > LSP_PACKET_ADDR_MAX) {
         lsp_verb(tag, "conf: address out of range\n");
-        return -LSP_ERR_ADDR_INVALID;
+        return LSP_ERR_ADDR_INVALID;
     }
 
     if(conf->hostname == NULL)

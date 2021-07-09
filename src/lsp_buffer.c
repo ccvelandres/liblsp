@@ -71,6 +71,12 @@ void *lsp_buffer_push(lsp_buffer_t *buff, size_t len)
     return buff->data;
 }
 
+int lsp_buffer_free(lsp_buffer_t *buff)
+{
+    lsp_free(buff);
+    return LSP_ERR_NONE;
+}
+
 void lsp_buffer_debug(lsp_buffer_t *buff)
 {
     lsp_dbg(tag, "lsp_buffer @      ----------  0x%08x  ----------\n", buff);

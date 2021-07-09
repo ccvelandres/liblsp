@@ -64,13 +64,27 @@ int lsp_port_free()
 int lsp_listen(lsp_socket_t sock, int backlog)
 {
     lsp_socket_t sk;
-    uint8_t port = (sock->port < LSP_PACKET_PORT_MAX ? sock->port : LSP_PACKET_PORT_MAX);
+    uint8_t port = sock->port;
+
+    if(port <= LSP_PACKET_PORT_MAX)
+    {
+        lsp_err(tag, "lsp_listen invalid port, call lsp_bind first or possible corruption\n");
+        return LSP_ERR_INVALID;
+    }
 
     if(sock == NULL)
         return LSP_ERR_INVALID;
         
     sock->type = CONN_SERVER;
     sock->type = CONN_LISTEN;
+
+    // allocate queue
+    sock->children = lsp_queue_create(backlog, sizeof(lsp_socket_t));
+    if(sock->children == NULL)
+    {
+        lsp_err(tag, "lsp_listen could not create alloc mem for backlog\n");
+        return LSP_ERR_NOMEM;
+    }
 
     if(lsp_list_is_empty(&ports[port].sockets))
     {

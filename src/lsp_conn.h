@@ -114,6 +114,14 @@ lsp_conn_t *lsp_conn_alloc(lsp_conn_type_t type);
 int lsp_conn_close(lsp_conn_t *conn);
 
 /**
+ * @brief flushes the rx queue of the connection
+ * 
+ * @param conn connection
+ * @return int LSP_ERR_NONE on success, otherwise an error code
+ */
+int lsp_conn_rxq_flush(lsp_conn_t *conn);
+
+/**
  * @brief Push data to connection
  * 
  * @param conn connection

@@ -33,6 +33,7 @@ ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_queue.c
 ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_memory.c
 ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_mutex.c
 ${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_thread.c
+${CMAKE_SOURCE_DIR}/src/arch/posix/lsp_time.c
 )
 
 set (LSP_INCLUDE_DIRS
@@ -43,7 +44,7 @@ ${CMAKE_SOURCE_DIR}/src/include/arch
 add_library(lsp STATIC ${LSP_SOURCES})
 target_compile_definitions(lsp PUBLIC LSP_POSIX)
 target_include_directories(lsp PUBLIC ${LSP_INCLUDE_DIRS})
-target_include_directories(lsp PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(lsp PUBLIC ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(lsp PUBLIC pthread)
 
 add_executable(${PROJECT_EXE} ${CMAKE_SOURCE_DIR}/tests/main.c)

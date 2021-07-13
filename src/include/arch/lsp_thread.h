@@ -15,11 +15,11 @@ typedef pthread_t lsp_thread_handle_t;
 /**
  * @brief Platform specific thread return type
  */
-typedef void * lsp_return_t;
+typedef void * lsp_thread_return_t;
 /**
  * @brief Platform specific thread function
  */
-typedef lsp_return_t (*lsp_thread_func_t)(void *arg);
+typedef lsp_thread_return_t (*lsp_thread_func_t)(void *arg);
 
 #else 
 /**
@@ -29,11 +29,11 @@ typedef void lsp_thread_handle_t;
 /**
  * @brief Platform specific thread return type
  */
-typedef void lsp_return_t;
+typedef void lsp_thread_return_t;
 /**
  * @brief Platform specific thread function
  */
-typedef lsp_return_t (*lsp_thread_func_t)(void *arg);
+typedef lsp_thread_return_t (*lsp_thread_func_t)(void *arg);
 #endif
 
 /**

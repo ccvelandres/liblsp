@@ -31,28 +31,29 @@ lsp_socket_t lsp_socket(int domain, int type, int protocol)
 {
     lsp_socket_t sock = NULL;
 
-    if(domain != AF_LSP){
-        lsp_err(tag, "lsp_socket domain must be set to AF_LSP\n");
+    if (domain != AF_LSP)
+    {
+        lsp_err(tag, "%s: domain must be set to AF_LSP\n", __FUNCTION__);
         return NULL;
     }
 
-    if(type != LSP_SOCK_RAW && type != LSP_SOCK_STREAM)
+    if (type != LSP_SOCK_RAW && type != LSP_SOCK_STREAM)
     {
-        lsp_err(tag, "lsp_socket type must be either LSP_SOCK_RAW or LSP_SOCK_STREAM\n");
+        lsp_err(tag, "%s: type must be either LSP_SOCK_RAW or LSP_SOCK_STREAM\n", __FUNCTION__);
         return NULL;
     }
 
-    if(protocol != LSPPROTO_LSP)
+    if (protocol != LSPPROTO_LSP)
     {
-        lsp_err(tag, "lsp_socket protocol must be LSPPROTO_LSP\n");
+        lsp_err(tag, "%s: protocol must be LSPPROTO_LSP\n", __FUNCTION__);
         return NULL;
     }
 
     // assume server so head list is initialized
     sock = lsp_conn_alloc(CONN_SERVER);
-    if(sock == NULL)
+    if (sock == NULL)
     {
-        lsp_verb(tag, "lsp_socket failed to create new socket\n");
+        lsp_verb(tag, "%s: failed to create new socket\n", __FUNCTION__);
         goto end;
     }
 
@@ -63,34 +64,33 @@ end:
 void lsp_closesocket(lsp_socket_t sock, int how)
 {
     int rc;
-    (void) how; // unused
+    (void)how; // unused
 
     lsp_conn_free(sock);
 }
-
 
 lsp_socket_t lsp_accept(lsp_socket_t sock, uint32_t timeout)
 {
     int rc;
     lsp_socket_t child = NULL;
 
-    if(sock->type != CONN_SERVER)
+    if (sock->type != CONN_SERVER)
     {
-        lsp_err(tag, "lsp_accept sock type is not CONN_SERVER\n");
+        lsp_err(tag, "%s: sock type is not CONN_SERVER\n", __FUNCTION__);
         return NULL;
     }
 
-    if(sock->state != CONN_LISTEN)
+    if (sock->state != CONN_LISTEN)
     {
-        lsp_err(tag, "lsp_accept sock is not in listen state\n");
+        lsp_err(tag, "%s: sock is not in listen state\n", __FUNCTION__);
         return NULL;
     }
 
     // wait happens on queue
     rc = lsp_queue_pop(sock->children, &child, timeout);
-    if(rc != LSP_ERR_NONE && rc != LSP_ERR_TIMEOUT)
+    if (rc != LSP_ERR_NONE && rc != LSP_ERR_TIMEOUT)
     {
-        lsp_err(tag, "lsp_accept error on rxq %d\n", rc);
+        lsp_err(tag, "%s: error on rxq %d\n", __FUNCTION__, rc);
     }
 
     child->type = CONN_CHILD;
@@ -101,14 +101,14 @@ lsp_socket_t lsp_accept(lsp_socket_t sock, uint32_t timeout)
 
 int lsp_connect(lsp_socket_t sock, lsp_sockaddr_t *sockaddr, size_t addrlen)
 {
-    if(sockaddr->port == LSP_PORT_ANY) 
+    if (sockaddr->port == LSP_PORT_ANY)
     {
         sock->attr.rport = LSP_PACKET_PORT_MAX + 1;
     }
-    else if(sockaddr->port > LSP_PACKET_PORT_MAX)
+    else if (sockaddr->port > LSP_PACKET_PORT_MAX)
     {
-        lsp_err(tag, "lsp_connect invalid port %u, portrange: 0-%u + (LSP_PORT_ANY for default)\n",
-            sockaddr->port, LSP_PACKET_PORT_MAX);
+        lsp_err(tag, "%s: invalid port %u, portrange: 0-%u + (LSP_PORT_ANY for default)\n", __FUNCTION__,
+                sockaddr->port, LSP_PACKET_PORT_MAX);
         return LSP_ERR_PORT_INVALID;
     }
 

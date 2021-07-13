@@ -46,7 +46,7 @@ typedef struct _lsp_queue_handle
     uint8_t *data;
 } _lsp_queue_handle_t;
 
-static inline int queue_wait(pthread_cond_t *cond, pthread_mutex_t *mutex, uint32_t timeout)
+static inline int queue_wait_internal(pthread_cond_t *cond, pthread_mutex_t *mutex, uint32_t timeout)
 {
     struct timespec ts;
     int rc;
@@ -56,7 +56,7 @@ static inline int queue_wait(pthread_cond_t *cond, pthread_mutex_t *mutex, uint3
         rc = clock_gettime(CLOCK_MONOTONIC, &ts);
         if (rc < 0)
         {
-            lsp_verb(tag, "failed to get time\n");
+            lsp_verb(tag, "%s: failed to get time\n", __FUNCTION__);
             goto notimeout;
         }
         else
@@ -96,7 +96,7 @@ lsp_queue_handle_t lsp_queue_create(int length, size_t itemsize)
 #else
     blocksize = ALIGNED_SIZEOF(_lsp_queue_handle_t) + (length * itemsize);
     if (!IS_ALIGNED(itemsize))
-        lsp_warn(tag, "queue_create itemsize is unaligned and mem alignment is disabled\n");
+        lsp_warn(tag, "%s: itemsize is unaligned and mem alignment is disabled\n", __FUNCTION__);
 #endif
     hdl = lsp_malloc(blocksize);
     if (hdl == NULL)
@@ -107,7 +107,7 @@ lsp_queue_handle_t lsp_queue_create(int length, size_t itemsize)
         queue_init_pthread_cond(&hdl->cond_full) != 0 ||
         queue_init_pthread_cond(&hdl->cond_empty) != 0)
     {
-        lsp_verb(tag, "queue_create could init pthread elements\n");
+        lsp_verb(tag, "%s: could init pthread elements\n", __FUNCTION__);
         goto alloc_err;
     }
 
@@ -118,7 +118,7 @@ lsp_queue_handle_t lsp_queue_create(int length, size_t itemsize)
     hdl->itemsize = itemsize;
     hdl->data = ((unsigned char *)hdl + ALIGNED_SIZEOF(_lsp_queue_handle_t));
 
-    lsp_verb(tag, "queue_create block @ %p blocksize: %d controlblock: %d data @ %p len: %d itemsize: %d (%d)\n",
+    lsp_verb(tag, "%s: block @ %p blocksize: %d controlblock: %d data @ %p len: %d itemsize: %d (%d)\n", __FUNCTION__,
              hdl,
              blocksize,
              ALIGNED_SIZEOF(_lsp_queue_handle_t),
@@ -140,7 +140,7 @@ err:
 int lsp_queue_destroy(lsp_queue_handle_t handle)
 {
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
-    if(hdl->waiting_empty || hdl->waiting_full)
+    if (hdl->waiting_empty || hdl->waiting_full)
         return LSP_ERR_RESOURCE_IN_USE;
     pthread_cond_destroy(&hdl->cond_empty);
     pthread_cond_destroy(&hdl->cond_full);
@@ -161,9 +161,10 @@ int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint
 
     if (hdl->length >= hdl->queue_size)
     {
-        if(timeout > 0){
+        if (timeout > 0)
+        {
             hdl->waiting_full++;
-            rc = queue_wait(&hdl->cond_full, &hdl->mutex, timeout);
+            rc = queue_wait_internal(&hdl->cond_full, &hdl->mutex, timeout);
             hdl->waiting_full--;
             if (rc)
             {
@@ -171,7 +172,8 @@ int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint
                 goto mutex_err;
             }
         }
-        else {
+        else
+        {
             rc = LSP_ERR_QUEUE_FULL;
             goto mutex_err;
         }
@@ -179,7 +181,7 @@ int lsp_queue_push(lsp_queue_handle_t handle, const void *const data, const uint
 
     entryPtr = ENTRY_FIND(hdl->data, hdl->tail, hdl->itemsize);
     memcpy(entryPtr, data, hdl->itemsize);
-    lsp_verb(tag, "queue_push idx: %d @ %p\n", hdl->tail, entryPtr);
+    lsp_verb(tag, "%s: idx: %d @ %p\n", __FUNCTION__, hdl->tail, entryPtr);
 
     hdl->tail = ++hdl->tail % hdl->queue_size;
     hdl->length++;
@@ -204,10 +206,10 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
 
     if (hdl->length <= 0)
     {
-        if(timeout > 0)
+        if (timeout > 0)
         {
             hdl->waiting_empty++;
-            rc = queue_wait(&hdl->cond_empty, &hdl->mutex, timeout);
+            rc = queue_wait_internal(&hdl->cond_empty, &hdl->mutex, timeout);
             hdl->waiting_empty--;
             if (rc)
             {
@@ -215,7 +217,8 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
                 goto mutex_err;
             }
         }
-        else {
+        else
+        {
             rc = LSP_ERR_QUEUE_EMPTY;
             goto mutex_err;
         }
@@ -223,7 +226,7 @@ int lsp_queue_pop(lsp_queue_handle_t handle, void *data, const uint32_t timeout)
 
     entryPtr = ENTRY_FIND(hdl->data, hdl->head, hdl->itemsize);
     memcpy(data, entryPtr, hdl->itemsize);
-    lsp_verb(tag, "queue_pop  idx: %d @ %p\n", hdl->head, entryPtr);
+    lsp_verb(tag, "%s:  idx: %d @ %p\n", __FUNCTION__, hdl->head, entryPtr);
 
     hdl->head = ++hdl->head % hdl->queue_size;
     hdl->length--;
@@ -250,7 +253,7 @@ int lsp_queue_itemsize(lsp_queue_handle_t handle)
 int lsp_queue_clear(lsp_queue_handle_t handle)
 {
     _lsp_queue_handle_t *hdl = (_lsp_queue_handle_t *)handle;
-    if(hdl->waiting_empty || hdl->waiting_full)
+    if (hdl->waiting_empty || hdl->waiting_full)
         return LSP_ERR_RESOURCE_IN_USE;
     lsp_mutex_lock(&hdl->mutex, LSP_TIMEOUT_MAX);
     hdl->head = 0;

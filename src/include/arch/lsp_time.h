@@ -44,5 +44,4 @@ uint32_t lsp_gettime_ms();
  */
 uint32_t lsp_gettime_s();
 
-
 #endif

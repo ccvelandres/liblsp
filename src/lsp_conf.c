@@ -36,23 +36,24 @@ int lsp_conf_init(lsp_conf_t *conf)
 {
     if (conf == NULL)
     {
-        lsp_verb(tag, "Default configurations loaded\n");
+        lsp_verb(tag, "%s: Default configurations loaded\n", __FUNCTION__);
         return LSP_ERR_NONE;
     }
 
-    if(conf->addr > LSP_PACKET_ADDR_MAX) {
-        lsp_verb(tag, "conf: address out of range\n");
+    if (conf->addr > LSP_PACKET_ADDR_MAX)
+    {
+        lsp_verb(tag, "%s: address out of range\n", __FUNCTION__);
         return LSP_ERR_ADDR_INVALID;
     }
 
-    if(conf->hostname == NULL)
-        lsp_verb(tag, "conf: null hostname, loading defaults\n");
+    if (conf->hostname == NULL)
+        lsp_verb(tag, "%s: null hostname, loading defaults\n", __FUNCTION__);
 
-    if(conf->machinename == NULL)
-        lsp_verb(tag, "conf: null machinename, loading defaults\n");
+    if (conf->machinename == NULL)
+        lsp_verb(tag, "%s: null machinename, loading defaults\n", __FUNCTION__);
 
-    if(conf->rev == NULL)
-        lsp_verb(tag, "conf: null rev, loading defaults\n");
+    if (conf->rev == NULL)
+        lsp_verb(tag, "%s: null rev, loading defaults\n", __FUNCTION__);
 
     _lsp_conf.addr = conf->addr;
     _lsp_conf.hostname = conf->hostname;

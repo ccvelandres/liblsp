@@ -33,11 +33,11 @@ int lsp_thread_create(lsp_thread_func_t func,
 {
     // create thread with default attr
     int rc = pthread_create(handle, NULL, func, parameter);
-    if(rc)
+    if (rc)
     {
-        lsp_verb(tag, "could not create pthread %d:%s\n", rc, strerror(rc));
+        lsp_verb(tag, "%s: could not create pthread %d:%s\n", __FUNCTION__, rc, strerror(rc));
         return LSP_ERR;
     }
-    else 
+    else
         return LSP_ERR_NONE;
 }

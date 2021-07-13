@@ -45,7 +45,7 @@ uint32_t lsp_uptime()
             setlocale(LC_NUMERIC, "C");
             res = sscanf(buf, "%lf", &uptime);
             setlocale(LC_NUMERIC, "");
-            if(res != 0)
+            if (res != 0)
                 uptime = 0;
         }
         fclose(fp);

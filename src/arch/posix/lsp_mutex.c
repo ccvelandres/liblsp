@@ -34,18 +34,19 @@ int lsp_mutex_init(lsp_mutex_t *mutex)
     int rc = pthread_mutex_init(mutex, NULL);
     if (rc)
     {
-        lsp_verb(tag, "could not initialize mutex %d:%s", rc, strerror(rc));
+        lsp_verb(tag, "%s: could not initialize mutex %d:%s\n", __FUNCTION__, rc, strerror(rc));
         return LSP_ERR_MUTEX;
     }
     else
         return LSP_ERR_NONE;
 }
+
 int lsp_mutex_destroy(lsp_mutex_t *mutex)
 {
     int rc = pthread_mutex_destroy(mutex);
     if (rc)
     {
-        lsp_verb(tag, "could not destroy mutex %d:%s\n", rc, strerror(rc));
+        lsp_verb(tag, "%s: could not destroy mutex %d:%s\n", __FUNCTION__, rc, strerror(rc));
         return LSP_ERR_MUTEX;
     }
     else
@@ -56,22 +57,23 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout)
 {
     int rc;
     struct timespec ts;
-    
-    if(timeout == LSP_TIMEOUT_MAX)
+
+    if (timeout == LSP_TIMEOUT_MAX)
     {
         rc = pthread_mutex_lock(mutex);
     }
-    else {
-        if(clock_gettime(CLOCK_REALTIME, &ts))
+    else
+    {
+        if (clock_gettime(CLOCK_REALTIME, &ts))
         {
-            lsp_verb(tag, "could not get time for locking\n");
+            lsp_verb(tag, "%s: could not get time for locking\n", __FUNCTION__);
             return LSP_ERR_MUTEX;
         }
-        
+
         ts.tv_sec += timeout / 1000;
         ts.tv_nsec += (timeout % 1000) * 1000000;
 
-        if(ts.tv_nsec >= 1000000000)
+        if (ts.tv_nsec >= 1000000000)
         {
             ts.tv_sec += ts.tv_nsec / 1000000000;
             ts.tv_nsec %= 1000000000;
@@ -82,7 +84,7 @@ int lsp_mutex_lock(lsp_mutex_t *mutex, uint32_t timeout)
 
     if (rc)
     {
-        lsp_verb(tag, "could not lock mutex %d:%s\n", rc, strerror(rc));
+        lsp_verb(tag, "%s: could not lock mutex %d:%s\n", __FUNCTION__, rc, strerror(rc));
         return LSP_ERR_MUTEX;
     }
     else
@@ -94,7 +96,7 @@ int lsp_mutex_unlock(lsp_mutex_t *mutex)
     int rc = pthread_mutex_unlock(mutex);
     if (rc)
     {
-        lsp_verb(tag, "could not unlock mutex %d:%s\n", rc, strerror(rc));
+        lsp_verb(tag, "%s: could not unlock mutex %d:%s\n", __FUNCTION__, rc, strerror(rc));
         return LSP_ERR_MUTEX;
     }
     else

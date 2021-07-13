@@ -29,7 +29,8 @@ lsp_buffer_t *lsp_buffer_alloc(lsp_interface_t *iface, size_t len)
 {
     size_t headroom = (iface != NULL ? iface->min_header_len : LSP_DEFAULT_BUFFER_HEADER_LEN);
     lsp_buffer_t *buff = lsp_malloc(ALIGNED_SIZEOF(lsp_buffer_t) + len + headroom);
-    lsp_verb(tag, "lsp_buffer_alloc() %p struct size %d buff size %d 0x%x\n", buff, ALIGNED_SIZEOF(lsp_buffer_t), ALIGNED_SIZEOF(lsp_buffer_t) + len + headroom, ALIGNED_SIZEOF(lsp_buffer_t) + len + headroom);
+    lsp_verb(tag, "%s: %p struct size %d buff size %d 0x%x\n",
+             __FUNCTION__, buff, ALIGNED_SIZEOF(lsp_buffer_t), ALIGNED_SIZEOF(lsp_buffer_t) + len + headroom, ALIGNED_SIZEOF(lsp_buffer_t) + len + headroom);
     if (buff == NULL)
     {
         lsp_dbg(tag, "could not allocate lsp_buffer\n");
@@ -50,7 +51,7 @@ void *lsp_buffer_put(lsp_buffer_t *buff, size_t len)
 {
     if (buff->tailroom < len)
     {
-        lsp_dbg(tag, "lsp_buffer_put() fail, overflow\n");
+        lsp_dbg(tag, "%s: fail, overflow\n", __FUNCTION__);
         return NULL;
     }
     void *data = buff->tail;
@@ -63,7 +64,7 @@ void *lsp_buffer_push(lsp_buffer_t *buff, size_t len)
 {
     if (buff->headroom < len)
     {
-        lsp_dbg(tag, "lsp_buffer_push() fail, overflow\n");
+        lsp_dbg(tag, "%s: fail, overflow\n", __FUNCTION__);
         return NULL;
     }
     buff->headroom -= len;

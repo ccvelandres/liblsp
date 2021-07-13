@@ -54,7 +54,7 @@ struct lsp_interface_s
 {
     int index;                   /** interface index (assigned on register) */
     char ifname[32];             /** interface name */
-    lsp_addr_t dev_addr;         /** interface address */
+    lsp_addr_t dev_addr;         /** interface address, set by system to system address */
     int flags;                   /** interface flags. see #LSP_IF_FLAGS */
     uint32_t mtu;                /** max transmission unit of interface */
     lsp_interface_ops_t *ops;    /** interface functions */
@@ -88,6 +88,9 @@ void *lsp_interface_getdata(lsp_interface_t *iface);
 
 /**
  * @brief sends a packet to the system. 
+ * @details Ideally, interface should go with zero-copy approach with lsp_buffer_t.
+ * This function is for for the sake of simple testing and reference for sending packets to 
+ * the system
  * 
  * @param iface pointer to source interface 
  * @param data pointer to packet

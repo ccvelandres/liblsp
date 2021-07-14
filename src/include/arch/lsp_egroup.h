@@ -28,12 +28,27 @@
 #ifdef LSP_POSIX
 #include <pthread.h>
 
-typedef void * lsp_egroup_handle_t;
+typedef struct lsp_egroup_handle_s *lsp_egroup_handle_t;
 typedef uint32_t lsp_egroup_bits_t;
+
+struct lsp_egroup_handle_s
+{
+    uint32_t event_bits;
+    pthread_cond_t cond;
+    pthread_mutex_t mutex;
+};
 
 #else
 typedef void *lsp_egroup_handle_t;
 #endif
+
+/**
+ * @brief initializes a statically allocated event group
+ * 
+ * @param handle event group
+ * @return int LSP_ERR_NONE on success, otherwise an error code
+ */
+int lsp_egroup_init(lsp_egroup_handle_t handle);
 
 /**
  * @brief creates an event group 
@@ -41,6 +56,13 @@ typedef void *lsp_egroup_handle_t;
  * @return lsp_egroup_handle_t 
  */
 lsp_egroup_handle_t lsp_egroup_create();
+
+/**
+ * @brief destroys an event group created with lsp_egroup_create
+ * 
+ * @param handle event group
+ */
+void lsp_egroup_destroy(lsp_egroup_handle_t handle);
 
 /**
  * @brief read bits in event group and/or optionally block until bits are set

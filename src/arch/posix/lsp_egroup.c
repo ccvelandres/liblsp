@@ -29,7 +29,7 @@
 
 #include <pthread.h>
 
-#if (!LSP_POSIX)
+#ifndef LSP_POSIX
 #error "This source is for POSIX systems only"
 #endif
 
@@ -37,41 +37,63 @@
 
 static const char *tag = "lsp_egroup";
 
-typedef struct
-{
-    uint32_t event_bits;
-    pthread_cond_t cond;
-    lsp_mutex_t mutex;
-} lsp_egroup_posix_t;
-
-lsp_egroup_handle_t lsp_egroup_create()
+int lsp_egroup_init(lsp_egroup_handle_t handle)
 {
     int rc;
-    lsp_egroup_posix_t *hdl = NULL;
     pthread_condattr_t attr;
-    size_t blocksize = sizeof(lsp_egroup_posix_t);
-
-    hdl = lsp_malloc(blocksize);
-    if (hdl == NULL)
-        goto end;
-
-    memset(hdl, 0, blocksize);
     pthread_condattr_init(&attr);
 
     if (pthread_condattr_setclock(&attr, CLOCK_MONOTONIC) != 0)
         goto init_err;
 
-    if (pthread_cond_init(&hdl->cond, &attr) != 0)
+    if (pthread_cond_init(&handle->cond, &attr) != 0)
+        goto init_err;
+
+    handle->event_bits = 0;
+    pthread_mutex_init(&handle->mutex, NULL);
+init_err:
+    pthread_condattr_destroy(&attr);
+end:
+    return rc;
+}
+
+lsp_egroup_handle_t lsp_egroup_create()
+{
+    int rc;
+    lsp_egroup_handle_t handle = NULL;
+    pthread_condattr_t attr;
+    size_t blocksize = sizeof(struct lsp_egroup_handle_s);
+
+    handle = lsp_malloc(blocksize);
+    if (handle == NULL)
+        goto end;
+
+    memset(handle, 0, blocksize);
+    pthread_condattr_init(&attr);
+
+    if (pthread_condattr_setclock(&attr, CLOCK_MONOTONIC) != 0)
+        goto init_err;
+
+    if (pthread_cond_init(&handle->cond, &attr) != 0)
         goto init_err;
 
     pthread_condattr_destroy(&attr);
-    return (lsp_egroup_handle_t)hdl;
+    pthread_mutex_init(&handle->mutex, NULL);
+    return handle;
 init_err:
     pthread_condattr_destroy(&attr);
 alloc_err:
-    lsp_free(hdl);
+    lsp_free(handle);
 end:
     return NULL;
+}
+
+void lsp_egroup_destroy(lsp_egroup_handle_t handle)
+{
+    /** TODO: add mechanism check and wake waiting threads before destroying pthread vars */
+    pthread_cond_destroy(&handle->cond);
+    pthread_mutex_destroy(&handle->mutex);
+    lsp_free(handle);
 }
 
 static inline int egroup_wait_internal(pthread_cond_t *cond, pthread_mutex_t *mutex, uint32_t timeout)
@@ -105,14 +127,12 @@ end:
 
 lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t bits, int clearOnExit, int waitAll, uint32_t timeout)
 {
-    /** TODO: add computation for remaining time, as of now, timeout is reused */
-    lsp_egroup_posix_t *hdl = (lsp_egroup_posix_t *)handle;
     lsp_egroup_bits_t ebits;
     uint32_t currrent_time, max_time = lsp_gettime_ms() + timeout;
     uint32_t remaining_timeout = timeout;
     int rc;
 
-    rc = lsp_mutex_lock(&hdl->mutex, remaining_timeout);
+    rc = lsp_mutex_lock(&handle->mutex, remaining_timeout);
     if (rc != LSP_ERR_NONE)
         goto err;
 
@@ -120,10 +140,10 @@ lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t 
     {
         if (timeout == LSP_TIMEOUT_MAX)
         {
-            while ((hdl->event_bits & bits) != bits)
+            while ((handle->event_bits & bits) != bits)
             {
                 
-                rc = egroup_wait_internal(&hdl->cond, &hdl->mutex, timeout);
+                rc = egroup_wait_internal(&handle->cond, &handle->mutex, timeout);
                 if (rc != 0)
                 {
                     lsp_verb(tag, "%s: error %d waiting for event\n", __FUNCTION__, rc);
@@ -138,13 +158,13 @@ lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t 
                 currrent_time = lsp_gettime_ms();
                 remaining_timeout = (max_time > currrent_time ? max_time - currrent_time : 0);
                 
-                rc = egroup_wait_internal(&hdl->cond, &hdl->mutex, remaining_timeout);
+                rc = egroup_wait_internal(&handle->cond, &handle->mutex, remaining_timeout);
                 if (rc != 0 && rc != ETIMEDOUT)
                 {
                     lsp_verb(tag, "%s: error %d waiting for event\n", __FUNCTION__, rc);
                     goto mutex_err;
                 }
-                else if ((hdl->event_bits & bits) == bits)
+                else if ((handle->event_bits & bits) == bits)
                     goto mutex_err;
             }
         }
@@ -158,9 +178,9 @@ lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t 
     {
         if (timeout == LSP_TIMEOUT_MAX)
         {
-            while (!(hdl->event_bits & bits))
+            while (!(handle->event_bits & bits))
             {
-                rc = egroup_wait_internal(&hdl->cond, &hdl->mutex, timeout);
+                rc = egroup_wait_internal(&handle->cond, &handle->mutex, timeout);
                 if (rc != 0)
                 {
                     lsp_verb(tag, "%s: error %d waiting for event\n", __FUNCTION__, rc);
@@ -175,13 +195,13 @@ lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t 
                 currrent_time = lsp_gettime_ms();
                 remaining_timeout = (max_time > currrent_time ? max_time - currrent_time : 0);
                 
-                rc = egroup_wait_internal(&hdl->cond, &hdl->mutex, remaining_timeout);
+                rc = egroup_wait_internal(&handle->cond, &handle->mutex, remaining_timeout);
                 if (rc != 0 && rc != ETIMEDOUT)
                 {
                     lsp_verb(tag, "%s: error %d waiting for event\n", __FUNCTION__, rc);
                     goto mutex_err;
                 }
-                else if ((hdl->event_bits & bits))
+                else if ((handle->event_bits & bits))
                     goto mutex_err;
             }
         }
@@ -193,15 +213,15 @@ lsp_egroup_bits_t lsp_egroup_wait(lsp_egroup_handle_t handle, lsp_egroup_bits_t 
     }
 
 mutex_err:
-    ebits = hdl->event_bits;
+    ebits = handle->event_bits;
     if(clearOnExit){
-        hdl->event_bits = 0;
+        handle->event_bits = 0;
     }
     else {
-        hdl->event_bits &= ~bits;
+        handle->event_bits &= ~bits;
     }
 
-    lsp_mutex_unlock(&hdl->mutex);
+    lsp_mutex_unlock(&handle->mutex);
 err:
     return ebits;
 }
@@ -209,19 +229,18 @@ err:
 lsp_egroup_bits_t lsp_egroup_set(lsp_egroup_handle_t handle, lsp_egroup_bits_t bits)
 {
     int rc;
-    lsp_egroup_posix_t *hdl = (lsp_egroup_posix_t *)handle;
 
-    rc = lsp_mutex_lock(&hdl->mutex, LSP_DEFAULT_MUTEX_TIMEOUT_MS);
+    rc = lsp_mutex_lock(&handle->mutex, LSP_DEFAULT_MUTEX_TIMEOUT_MS);
     if (rc != LSP_ERR_NONE)
     {
         lsp_err(tag, "%s: error locking mutex, this shouldn't happen\n", __FUNCTION__);
         goto err;
     }
 
-    hdl->event_bits |= bits;
-    pthread_cond_broadcast(&hdl->cond);
+    handle->event_bits |= bits;
+    pthread_cond_broadcast(&handle->cond);
 mutex_err:
-    lsp_mutex_unlock(&hdl->mutex);
+    lsp_mutex_unlock(&handle->mutex);
 err:
-    return hdl->event_bits;
+    return handle->event_bits;
 }

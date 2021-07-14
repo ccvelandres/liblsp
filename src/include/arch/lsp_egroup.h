@@ -33,7 +33,7 @@ typedef uint32_t lsp_egroup_bits_t;
 
 struct lsp_egroup_handle_s
 {
-    uint32_t event_bits;
+    lsp_egroup_bits_t event_bits;
     pthread_cond_t cond;
     pthread_mutex_t mutex;
 };

@@ -39,8 +39,8 @@ static lsp_mutex_t conn_mutex;
 
 static const lsp_connattr_t def_conn_attr = {
     .priority = LSP_CONN_PRIO_DEF,
-    .sport = LSP_PORT_ANY,
-    .saddr = LSP_ADDR_ANY,
+    .lport = LSP_PORT_ANY,
+    .laddr = LSP_ADDR_ANY,
     .rport = LSP_PORT_ANY,
     .raddr = LSP_ADDR_ANY,
     .flags = 0};
@@ -99,10 +99,11 @@ lsp_conn_t *lsp_conn_alloc()
     }
 
     conn->state = CONN_CLOSED;
-    conn->port = LSP_PORT_ANY;
     conn->parent = NULL;
     conn->attr = def_conn_attr;
-    conn->parent = NULL;
+    conn->rcv_timeout = LSP_TIMEOUT_MAX;
+    conn->snd_timeout = LSP_TIMEOUT_MAX;
+    conn->s_opt = 0;
 
     return conn;
 err:

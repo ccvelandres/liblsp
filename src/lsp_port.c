@@ -65,9 +65,9 @@ int lsp_port_free()
 int lsp_listen(lsp_socket_t sock, int backlog)
 {
     lsp_socket_t sk;
-    uint8_t port = sock->port;
+    uint8_t port = sock->attr.lport;
 
-    if (port <= LSP_PACKET_PORT_MAX)
+    if (port > LSP_PACKET_PORT_MAX)
     {
         lsp_err(tag, "%s: invalid port, call lsp_bind first or possible corruption\n", __FUNCTION__);
         return LSP_ERR_INVALID;
@@ -104,7 +104,7 @@ int lsp_listen(lsp_socket_t sock, int backlog)
         }
     }
 
-    lsp_info(tag, "%s: socket %p listening to port %u\n", __FUNCTION__, sock, sock->port);
+    lsp_info(tag, "%s: socket %p listening to port %u\n", __FUNCTION__, sock, sock->attr.lport);
 
     ports[port].state = PORT_OPEN;
 
@@ -118,7 +118,7 @@ int lsp_bind(lsp_socket_t sock, lsp_sockaddr_t *sockaddr, size_t addrlen)
         return LSP_ERR_INVALID;
 
     if (sockaddr->port == LSP_PORT_ANY)
-        sock->port = LSP_PACKET_PORT_MAX + 1;
+        sock->attr.lport = LSP_PACKET_PORT_MAX + 1;
     else if (sockaddr->port > LSP_PACKET_PORT_MAX)
     {
         lsp_err(tag, "%s: lsp_bind invalid port %u, portrange: 0-%u + (LSP_PORT_ANY for default)\n", __FUNCTION__,
@@ -126,13 +126,13 @@ int lsp_bind(lsp_socket_t sock, lsp_sockaddr_t *sockaddr, size_t addrlen)
         return LSP_ERR_PORT_INVALID;
     }
 
-    if (ports[sock->port].state != PORT_CLOSED)
+    if (ports[sock->attr.lport].state != PORT_CLOSED)
     {
-        lsp_verb(tag, "%s: lsp_bind port %u is already in use\n", __FUNCTION__, sock->port);
+        lsp_verb(tag, "%s: lsp_bind port %u is already in use\n", __FUNCTION__, sock->attr.lport);
         return LSP_ERR_PORT_IN_USE;
     }
 
-    lsp_info(tag, "%s: binding socket %p to port %u\n", __FUNCTION__, sock, sock->port);
+    lsp_info(tag, "%s: binding socket %p to port %u\n", __FUNCTION__, sock, sock->attr.lport);
 
     return LSP_ERR_NONE;
 }

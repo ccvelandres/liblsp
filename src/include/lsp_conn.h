@@ -43,12 +43,6 @@ typedef enum lsp_conn_state_e
     CONN_CONNECTED
 } lsp_conn_state_t;
 
-/** LSP Socket options */
-typedef enum lsp_sockopt_e
-{
-    LSP_SOCKOPTS_SETPRIO /** Set the socket priority */
-} lsp_sockopt_t;
-
 /** LSP Connection address struct */
 struct lsp_connadddr_s
 {
@@ -60,11 +54,11 @@ struct lsp_connadddr_s
 struct lsp_connattr_s
 {
     uint8_t priority; /** Connection priority */
-    uint8_t sport; /** Source port */
-    lsp_addr_t saddr; /** Source address */
-    uint8_t rport;  /** Remote Port */
+    uint8_t lport;    /** Local port */
+    lsp_addr_t laddr; /** Local address */
+    uint8_t rport;    /** Remote Port */
     lsp_addr_t raddr; /** Remote Address */
-    uint32_t flags; /** Connection Flags */
+    uint32_t flags;   /** Connection Flags */
 };
 
 /** LSP Connection struct */
@@ -72,15 +66,19 @@ struct lsp_conn_s
 {
     lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
     lsp_conn_state_t state; /** Connection state */
-    lsp_connattr_t attr; /** Connection attributes */
-    lsp_list_t portlist; /** linked list for port connections */
-    union {
+    lsp_connattr_t attr;    /** Connection attributes */
+    lsp_list_t portlist;    /** linked list for port connections */
+    union
+    {
         lsp_queue_handle_t children; /** queue for child connections */
-        lsp_conn_t *parent;   /** parent connection */
+        lsp_conn_t *parent;          /** parent connection */
     };
-    uint8_t port;             /** Connection port */
+    uint32_t rcv_timeout;        /** Max receive timeout */
+    uint32_t snd_timeout;        /** Max send timeout */
+    uint32_t s_opt;             /** Socket options */
     uint32_t timestamp;          /** Time the connection was opened */
-    lsp_queue_handle_t rx_queue; /** Queue for connection packets */
+    lsp_queue_handle_t rx_queue; /** primitive for sync TODO: implement something like event groups or cond var */
+    lsp_list_head_t rxstream, txstream;
 };
 
 /**

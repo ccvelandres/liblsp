@@ -24,6 +24,7 @@
 #include "lsp_types.h"
 #include "lsp_list.h"
 #include "lsp_queue.h"
+#include "lsp_egroup.h"
 
 /** LSP Connection types */
 typedef enum lsp_conn_type_e
@@ -78,10 +79,11 @@ struct lsp_connattr_s
 /** LSP Connection struct */
 struct lsp_conn_s
 {
-    lsp_conn_type_t type;   /** Connection type (Client or Server) and (Local or IPC) */
-    lsp_conn_state_t state; /** Connection state */
-    lsp_connattr_t attr;    /** Connection attributes */
-    lsp_list_t portlist;    /** linked list for port connections */
+    lsp_conn_type_t type;       /** Connection type (Client or Server) and (Local or IPC) */
+    lsp_conn_state_t state;     /** Connection state */
+    lsp_connattr_t attr;        /** Connection attributes */
+    lsp_egroup_handle_t egroup; /** Event Group Handle*/
+    lsp_list_t portlist;        /** linked list for port connections */
     union
     {
         lsp_queue_handle_t children; /** queue for child connections */
@@ -89,7 +91,7 @@ struct lsp_conn_s
     };
     uint32_t rcv_timeout;        /** Max receive timeout */
     uint32_t snd_timeout;        /** Max send timeout */
-    uint32_t s_opt;             /** Socket options */
+    uint32_t s_opt;              /** Socket options */
     uint32_t timestamp;          /** Time the connection was opened */
     lsp_queue_handle_t rx_queue; /** primitive for sync TODO: implement something like event groups or cond var */
     lsp_list_head_t rxstream, txstream;

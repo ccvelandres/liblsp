@@ -25,14 +25,23 @@
 
 #include "string.h"
 
-#ifndef LSP_CONN_FREE_RESOURCE_AFTERUSE
-#define LSP_CONN_FREE_RESOURCE_AFTERUSE 0
+#ifndef LSP_CONN_EGROUP_POOL
+#define LSP_CONN_EGROUP_POOL 0
+#endif
+
+#ifndef LSP_CONN_PERSISTENT_RXQUEUE
+#define LSP_CONN_PERSISTENT_RXQUEUE 0
 #endif
 
 static const char *tag = "lsp_conn";
 
 /** LSP Connection Pool */
 static lsp_conn_t *conn_pool;
+
+#if (LSP_CONN_EGROUP_POOL) 
+/** LSP Connection Event Group Pool */
+static struct lsp_egroup_handle_s *egroup_pool;
+#endif
 
 /** LSP Connection Mutex */
 static lsp_mutex_t conn_mutex;
@@ -47,8 +56,12 @@ static const lsp_connattr_t def_conn_attr = {
 
 int lsp_conn_init()
 {
+    int rc;
     LSP_ASSERT(conn_pool == NULL, "%s: is called twice\n", __FUNCTION__);
     size_t blocksize = lsp_conf->conn_max * sizeof(lsp_conn_t);
+
+    lsp_mutex_init(&conn_mutex);
+
     conn_pool = lsp_malloc(blocksize);
     if (conn_pool == NULL)
     {
@@ -56,12 +69,38 @@ int lsp_conn_init()
         return -LSP_ERR_NOMEM;
     }
     memset(conn_pool, 0, blocksize);
-    lsp_verb(tag, "%s: lsp_conn_init allocated %d bytes for conn_pool poolsize: %d connsize: %d\n", __FUNCTION__, blocksize, lsp_conf->conn_max, sizeof(lsp_conn_t));
+    lsp_verb(tag, "%s: allocated %d bytes for conn_pool poolsize: %d connsize: %d\n", __FUNCTION__, blocksize, lsp_conf->conn_max, sizeof(lsp_conn_t));
+    
+#if (LSP_CONN_EGROUP_POOL)
+    // we allocate a large block instead of multiple small blocks
+    // not actually sure if this would be better than allocating only when needed
+    blocksize = sizeof(struct lsp_egroup_handle_s) * lsp_conf->conn_max;
+    egroup_pool = lsp_malloc(blocksize);
+    if(egroup_pool == NULL)
+    {
+        lsp_verb(tag, "%s: could not allocate conn_pool\n", __FUNCTION__);
+        rc = -LSP_ERR_NOMEM;
+        goto conn_err;
+    }
 
-    // rely on calloc zero set the chunk and CONN_CLOSED is zero
+    memset(egroup_pool, 0, blocksize);
+    lsp_verb(tag, "%s: allocated %d bytes for egroup_pool poolsize: %d egroup_size: %d\n", __FUNCTION__, blocksize, lsp_conf->conn_max, sizeof(struct lsp_egroup_handle_s));
 
-    lsp_mutex_init(&conn_mutex);
-    return LSP_ERR_NONE;
+    for(int i = 0; i < lsp_conf->conn_max; ++i)
+    {
+        rc = lsp_egroup_init(&egroup_pool[i]);
+        if(rc != LSP_ERR_NONE)
+            goto egroup_err;
+        conn_pool[i].egroup = &egroup_pool[i];
+    }
+
+egroup_err:
+    lsp_free(egroup_pool);
+#endif
+conn_err:
+    lsp_free(conn_pool);
+end:
+    return rc;
 }
 
 lsp_conn_t *lsp_conn_alloc()
@@ -87,7 +126,7 @@ lsp_conn_t *lsp_conn_alloc()
         return NULL;
     }
 
-    // create queue if 1st time
+    // create queue if not exist
     if (conn->rx_queue == NULL)
     {
         conn->rx_queue = lsp_queue_create(lsp_conf->conn_queuelen, sizeof(lsp_buffer_t *));
@@ -97,6 +136,19 @@ lsp_conn_t *lsp_conn_alloc()
             return NULL;
         }
     }
+
+#if !(LSP_CONN_EGROUP_POOL) 
+    // create egroup if 1st time
+    if (conn->egroup == NULL)
+    {
+        conn->egroup = lsp_egroup_create();
+        if (conn->egroup == NULL)
+        {
+            lsp_err(tag, "%s: could not create event group for lsp_conn\n", __FUNCTION__);
+            return NULL;
+        }
+    }
+#endif
 
     conn->state = CONN_CLOSED;
     conn->parent = NULL;
@@ -131,11 +183,20 @@ int lsp_conn_close(lsp_conn_t *conn)
     if (rc != LSP_ERR_NONE)
         goto end;
 
-#if (LSP_CONN_FREE_RESOURCE_AFTERUSE)
-    // optional delete rxq
+#if (LSP_CONN_PERSISTENT_RXQUEUE)
     rc = lsp_queue_destroy(conn->rx_queue);
-    if (rc != LSP_ERR_NONE)
-        goto end;
+    if(rc == LSP_ERR_NONE)
+        conn->rx_queue = NULL;
+    else 
+        lsp_err(tag, "%s: could not destroy rx_queue for lsp_conn\n", __FUNCTION__);
+#endif
+
+#if !(LSP_CONN_EGROUP_POOL)
+    rc = lsp_egroup_destroy(conn->egroup);
+    if(rc == LSP_ERR_NONE)
+        conn->egroup = NULL;
+    else 
+        lsp_err(tag, "%s: could not destroy egroup for lsp_conn\n", __FUNCTION__);
 #endif
 
 end:

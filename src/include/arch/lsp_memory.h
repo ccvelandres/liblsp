@@ -45,4 +45,14 @@ void *lsp_calloc(size_t nmemb, size_t size);
  */
 void lsp_free(void *ptr);
 
+#if (DEBUG)
+/**
+ * @brief prints amount of allocated mem to console ifsupported
+ * 
+ * @return void 
+ */
+void lsp_printmem();
+#endif
+
+
 #endif

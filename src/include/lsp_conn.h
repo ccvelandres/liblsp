@@ -43,6 +43,20 @@ typedef enum lsp_conn_state_e
     CONN_CONNECTED
 } lsp_conn_state_t;
 
+/** LSP Connection events */
+typedef enum lsp_conn_events_e
+{
+    CONN_EV_RECEIVE = 0x01,
+    CONN_EV_SEND = 0x02,
+    CONN_EV_BOUND = 0x04,
+    CONN_EV_LISTEN = 0x08,
+    CONN_EV_ACCEPT = 0x10,
+    CONN_EV_CONNECT = 0x20,
+    CONN_EV_CLOSED = 0x40,
+    CONN_EV_INTR = 0x80,
+    CONN_EV_ALL = 0xFF
+}lsp_conn_events_t;
+
 /** LSP Connection address struct */
 struct lsp_connadddr_s
 {

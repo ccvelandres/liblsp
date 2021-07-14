@@ -53,4 +53,13 @@ int lsp_port_init();
  */
 int lsp_port_free();
 
+/**
+ * 
+ * @brief Retrieves the port for specified port number
+ * 
+ * @param port port number
+ * @return lsp_port_t* pointer to port, NULL on error
+ */
+lsp_port_t *lsp_port_get(uint8_t port);
+
 #endif

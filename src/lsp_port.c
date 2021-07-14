@@ -62,6 +62,16 @@ int lsp_port_free()
     return LSP_ERR_NONE;
 }
 
+lsp_port_t *lsp_port_get(uint8_t port)
+{
+    if (port > LSP_PACKET_PORT_MAX)
+    {
+        lsp_err(tag, "%s: invalid port number\n", __FUNCTION__);
+        return NULL;
+    }
+    return &ports[port];
+}
+
 int lsp_listen(lsp_socket_t sock, int backlog)
 {
     lsp_socket_t sk;

@@ -83,12 +83,32 @@ void *lsp_buffer_put(lsp_buffer_t *buff, size_t len);
 void *lsp_buffer_push(lsp_buffer_t *buff, size_t len);
 
 /**
+ * @brief removes data from start of buffer
+ * @details adjusts tail if bytes to remove exceeds the tail
+ * @param buff pointer to buffer
+ * @param len length of data to remove
+ * @return void* pointer to start of removed data
+ */
+void *lsp_buffer_pull(lsp_buffer_t *buff, size_t len);
+
+/**
  * @brief frees the buffer
  * 
  * @param buff pointer to buffer
  * @return int LSP_ERR_NONE on success, otherwise an error code
  */
 int lsp_buffer_free(lsp_buffer_t *buff);
+
+/**
+ * @brief returns size of bytes in buffer
+ * 
+ * @param buff buffer
+ * @return size_t length in bytes
+ */
+static inline size_t lsp_buffer_length(lsp_buffer_t *buff)
+{
+    return buff->tail - buff->data;
+}
 
 void lsp_buffer_debug(lsp_buffer_t *buff);
 

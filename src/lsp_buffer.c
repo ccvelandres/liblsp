@@ -72,6 +72,25 @@ void *lsp_buffer_push(lsp_buffer_t *buff, size_t len)
     return buff->data;
 }
 
+void *lsp_buffer_pull(lsp_buffer_t *buff, size_t len)
+{
+    // clip len to max len if it exceeds
+    if (buff->tail - buff->data < len)
+        len = buff->tail - buff->data;
+
+    void *data = buff->data;
+    buff->data += len;
+    buff->headroom += len;
+
+    if (buff->data > buff->tail)
+    {
+        buff->tailroom -= buff->data - buff->tail;
+        buff->tail = buff->data;
+    }
+
+    return data;
+}
+
 int lsp_buffer_free(lsp_buffer_t *buff)
 {
     lsp_free(buff);
